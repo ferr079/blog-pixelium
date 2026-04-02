@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts', (p) => !p.data.draft);
+const tagCounts = new Map<string, number>();
+posts.forEach((p) => p.data.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1)));
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<Base title="Tags — pixelium // blog">
+  <Nav />
+  <main>
+    <div class="tags-page">
+      <header class="reveal">
+        <h1><span class="hash">#</span> Tags</h1>
+        <p class="sub">{tags.length} sujets explores</p>
+      </header>
+      <div class="tags-cloud reveal">
+        {tags.map(([tag, count]) => (
+          <a href={`/tags/${tag}/`} class="tag-pill">
+            <span class="tag-name">{tag}</span>
+            <span class="tag-count">{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  main {
+    min-height: calc(100vh - 3.5rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tags-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+    width: 100%;
+  }
+
+  header { margin-bottom: 2.5rem; }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .hash { color: var(--color-accent); }
+
+  .sub {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-faint);
+    margin-top: 0.5rem;
+  }
+
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .tag-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .tag-pill:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .tag-name { font-weight: 500; }
+
+  .tag-count {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    background: var(--color-surface);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    color: var(--color-text-faint);
+  }
+
+  .tag-pill:hover .tag-count { color: var(--color-accent); }
+</style>

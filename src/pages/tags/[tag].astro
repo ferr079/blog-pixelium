@@ -1,0 +1,104 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { getReadingTime } from '../../utils/reading-time';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', (p) => !p.data.draft);
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Base title={`${tag} — pixelium // blog`}>
+  <Nav />
+  <main>
+    <div class="tag-page">
+      <header class="reveal">
+        <a href="/tags/" class="back-link"><span class="arrow">&larr;</span> Tous les tags</a>
+        <h1><span class="hash">#</span>{tag}</h1>
+        <p class="sub">{posts.length} article{posts.length > 1 ? 's' : ''}</p>
+      </header>
+      <div class="articles-grid">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            date={post.data.date}
+            tags={post.data.tags}
+            summary={post.data.summary}
+            slug={post.id}
+            readingTime={getReadingTime(post.body ?? '')}
+          />
+        ))}
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  main {
+    min-height: calc(100vh - 3.5rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tag-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+    width: 100%;
+  }
+
+  header { margin-bottom: 2.5rem; }
+
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--color-accent); }
+  .arrow { display: inline-block; transition: transform 0.2s; }
+  .back-link:hover .arrow { transform: translateX(-3px); }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-top: 0.75rem;
+  }
+
+  .hash { color: var(--color-accent); }
+
+  .sub {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-faint);
+    margin-top: 0.5rem;
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 640px) {
+    .articles-grid { grid-template-columns: 1fr; }
+  }
+</style>

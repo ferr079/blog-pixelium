@@ -1,0 +1,222 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="site-nav">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">
+      <svg class="nav-logo" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="0" y="0" width="7" height="7" rx="1" fill="#38bdf8" opacity="0.9" />
+        <rect x="9" y="0" width="7" height="7" rx="1" fill="#38bdf8" opacity="0.5" />
+        <rect x="0" y="9" width="7" height="7" rx="1" fill="#38bdf8" opacity="0.5" />
+        <rect x="9" y="9" width="7" height="7" rx="1" fill="#38bdf8" opacity="0.2" />
+      </svg>
+      <span class="nav-text">pixelium<span class="nav-sep">//</span><span class="nav-blog">blog</span></span>
+    </a>
+    <div class="nav-right">
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+    </div>
+    <div class="nav-links">
+      <a href="/" class:list={[{ active: currentPath === '/' }]}>Articles</a>
+      <a href="/tags/" class:list={[{ active: currentPath.startsWith('/tags') }]}>Tags</a>
+      <a href="/rss.xml" class="rss-link" aria-label="Flux RSS">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>
+        <span class="rss-text">RSS</span>
+      </a>
+      <a href="https://pixelium.win" class="back-portfolio" target="_blank" rel="noopener">
+        Portfolio <span class="arrow">&nearr;</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.querySelector('.nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+  }
+</script>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 15, 26, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: 0.75rem 0;
+  }
+
+  .nav-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .nav-brand {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--color-text);
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+
+  .nav-brand:hover { color: var(--color-accent); }
+
+  .nav-logo {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    transition: filter 0.3s;
+  }
+
+  .nav-logo rect { transition: opacity 0.3s; }
+  .nav-brand:hover .nav-logo { filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.5)); }
+  .nav-brand:hover .nav-logo rect { opacity: 1; }
+
+  .nav-sep { color: var(--color-text-faint); margin: 0 0.15rem; font-weight: 400; }
+  .nav-blog { color: var(--color-accent); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--color-accent); }
+  .nav-links a.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+
+  .rss-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .rss-text { font-family: var(--font-mono); font-size: 0.7rem; }
+
+  .back-portfolio {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    border-bottom: 1px solid var(--color-border) !important;
+  }
+
+  .back-portfolio:hover {
+    border-color: var(--color-accent) !important;
+    color: var(--color-accent);
+  }
+
+  .arrow { font-size: 0.7rem; }
+
+  /* Hamburger */
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.4rem;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hamburger,
+  .hamburger::before,
+  .hamburger::after {
+    display: block;
+    width: 1rem;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 1px;
+    transition: transform 0.2s, opacity 0.2s;
+    position: relative;
+  }
+
+  .hamburger::before,
+  .hamburger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+
+  .hamburger::before { top: -5px; }
+  .hamburger::after { top: 5px; }
+
+  .nav-toggle[aria-expanded="true"] .hamburger { background: transparent; }
+  .nav-toggle[aria-expanded="true"] .hamburger::before { top: 0; transform: rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] .hamburger::after { top: 0; transform: rotate(-45deg); }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .nav-container { padding: 0.5rem 1rem; }
+
+    .nav-toggle { display: flex; }
+
+    .nav-links {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 0;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--color-border-subtle);
+      margin-top: 0.5rem;
+    }
+
+    .nav-links.open { display: flex; }
+
+    .nav-links a {
+      font-size: 0.9rem;
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.3) !important;
+      border-radius: 4px;
+    }
+
+    .nav-links a.active {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 2px solid var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .nav-links a:last-child { border-bottom: none !important; }
+
+    .back-portfolio { border: none !important; padding: 0.6rem 0.5rem; }
+  }
+</style>

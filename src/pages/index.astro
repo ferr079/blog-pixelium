@@ -1,0 +1,274 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { getReadingTime } from '../utils/reading-time';
+
+const ARTICLES_PER_PAGE = 8;
+
+const allPosts = (await getCollection('posts', (p) => !p.data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const page = Number(Astro.url.searchParams.get('page') ?? '1');
+const totalPages = Math.ceil(allPosts.length / ARTICLES_PER_PAGE);
+const currentPage = Math.max(1, Math.min(page, totalPages));
+const posts = allPosts.slice((currentPage - 1) * ARTICLES_PER_PAGE, currentPage * ARTICLES_PER_PAGE);
+
+const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
+---
+
+<Base title="pixelium // blog — Journal de bord technique">
+  <Nav />
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-terminal reveal">
+          <div class="terminal-bar">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="terminal-title">~/homelab</span>
+          </div>
+          <div class="terminal-body">
+            <span class="prompt">$</span> <span class="typing"><span class="cmd">tail -f</span> <span class="arg">/var/log/homelab/aventures.log</span></span><span class="cursor">_</span>
+          </div>
+        </div>
+        <h1 class="reveal">
+          Construire. Apprendre.<br />
+          <span class="accent">Documenter.</span>
+        </h1>
+        <p class="hero-sub reveal">
+          Journal de bord d'un homelab &mdash; infra, securite, IA, et tout ce qu'on decouvre en chemin.
+        </p>
+      </div>
+    </section>
+
+    <section class="articles">
+      <div class="articles-inner">
+        <div class="section-header reveal">
+          <h2><span class="hash">#</span> Articles{currentPage > 1 ? ` — page ${currentPage}` : ''}</h2>
+          <span class="section-stats">{allPosts.length} articles &middot; {allTags.length} sujets</span>
+        </div>
+        <div class="articles-list">
+          {posts.map((post) => (
+            <ArticleCard
+              title={post.data.title}
+              date={post.data.date}
+              tags={post.data.tags}
+              summary={post.data.summary}
+              slug={post.id}
+              readingTime={getReadingTime(post.body ?? '')}
+              cover={post.data.cover}
+            />
+          ))}
+        </div>
+        {totalPages > 1 && (
+          <nav class="pagination reveal" aria-label="Pagination">
+            {currentPage > 1 && (
+              <a href={currentPage === 2 ? '/' : `/?page=${currentPage - 1}`} class="page-link prev">
+                <span class="page-arrow">&larr;</span> Precedents
+              </a>
+            )}
+            <span class="page-info">
+              Page <span class="page-current">{currentPage}</span> sur {totalPages}
+            </span>
+            {currentPage < totalPages && (
+              <a href={`/?page=${currentPage + 1}`} class="page-link next">
+                Suivants <span class="page-arrow">&rarr;</span>
+              </a>
+            )}
+          </nav>
+        )}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  main { display: flex; flex-direction: column; }
+
+  /* ---- HERO ---- */
+  .hero {
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(56, 189, 248, 0.06), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hero-terminal {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius);
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.red { background: var(--color-red); }
+  .dot.yellow { background: var(--color-yellow); }
+  .dot.green { background: var(--color-green); }
+  .terminal-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--color-text-faint); margin-left: 0.5rem; }
+
+  .terminal-body {
+    padding: 0.6rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .prompt { color: var(--color-green); }
+  .cmd { color: var(--color-text); }
+  .arg { color: var(--color-accent); }
+
+  .typing {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    animation: typing 1.8s steps(38) 0.5s forwards;
+  }
+
+  .cursor {
+    color: var(--color-accent);
+    animation: blink 1s step-end infinite;
+    font-weight: 300;
+  }
+
+  @keyframes typing {
+    to { width: 38ch; }
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  .accent { color: var(--color-accent); }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  /* ---- ARTICLES ---- */
+  .articles {
+    padding: 1rem 1.5rem 3rem;
+  }
+
+  .articles-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .hash { color: var(--color-accent); margin-right: 0.25rem; }
+
+  .section-stats {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    white-space: nowrap;
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* ---- PAGINATION ---- */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .page-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+  }
+
+  .page-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .page-arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+
+  .prev:hover .page-arrow { transform: translateX(-3px); }
+  .next:hover .page-arrow { transform: translateX(3px); }
+
+  .page-info {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+  }
+
+  .page-current { color: var(--color-accent); font-weight: 600; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 3rem 1rem 2rem; }
+    .articles { padding: 1.5rem 1rem 3rem; }
+    .hero-sub { font-size: 1rem; }
+  }
+</style>
