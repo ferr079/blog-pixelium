@@ -2,34 +2,34 @@
 title: "SSO avec Authentik : un seul login pour 30 services"
 date: 2026-03-25
 tags: ["securite", "authentik", "homelab", "sso"]
-summary: "Installer un provider SSO self-hosted pour unifier l'authentification de tous mes services. Le parcours, les integrations, et le bug KnownProxies qui m'a rendu fou."
+summary: "Installer un provider SSO self-hosted pour unifier l'authentification de tous les services. Le parcours, les intégrations, et le bug KnownProxies qui nous a rendus fous."
 ---
 
-## Le symptome
+## Le symptôme
 
-A force d'ajouter des services a mon homelab, j'avais accumule une collection impressionnante de credentials :
+À force d'ajouter des services au homelab, j'avais accumulé une collection impressionnante de credentials :
 - Un login pour Forgejo
 - Un login pour Semaphore
-- Un login pour Proxmox (x3 noeuds)
+- Un login pour Proxmox (×3 nœuds)
 - Un login pour Jellyfin
 - Un login pour Kavita
 - Et ainsi de suite...
 
-Certains avaient les memes identifiants (mauvaise pratique), d'autres non (impossible a retenir). Se connecter a un nouveau service impliquait de retrouver le bon mot de passe dans Vaultwarden, le copier, le coller.
+Certains avaient les mêmes identifiants (mauvaise pratique), d'autres non (impossible à retenir). Se connecter à un nouveau service impliquait de retrouver le bon mot de passe dans Vaultwarden, le copier, le coller.
 
-**SSO** (Single Sign-On) resout ca : un seul compte, un seul login, acces a tout.
+**SSO** (Single Sign-On) résout ça : un seul compte, un seul login, accès à tout.
 
 ## Pourquoi Authentik
 
-Le choix du provider SSO s'est pose entre :
+Le choix du provider SSO s'est posé entre :
 - **Keycloak** — l'ogre Java, puissant mais lourd (1+ Go RAM minimum)
-- **Authelia** — leger mais limite aux scenarios simples
-- **Authentik** — equilibre entre fonctionnalites et ressources
+- **Authelia** — léger mais limité aux scénarios simples
+- **Authentik** — équilibre entre fonctionnalités et ressources
 
-Authentik tourne en **Docker Compose** sur CT 118 (pve1). Il consomme environ 500 Mo de RAM — raisonnable pour un SSO complet avec OIDC, SAML, LDAP, et une interface d'administration soignee.
+Authentik tourne en **Docker Compose** sur CT 118 (pve1). Il consomme environ 500 Mo de RAM — raisonnable pour un SSO complet avec OIDC, SAML, LDAP, et une interface d'administration soignée.
 
 ```yaml
-# docker-compose.yml (simplifie)
+# docker-compose.yml (simplifié)
 services:
   server:
     image: ghcr.io/goauthentik/server:latest
@@ -45,13 +45,13 @@ services:
     image: redis:alpine
 ```
 
-## La premiere integration : Forgejo
+## La première intégration : Forgejo
 
-Forgejo (mon instance Git self-hosted) supporte OAuth2 nativement. C'est le candidat ideal pour commencer — l'integration est documentee des deux cotes.
+Forgejo (notre instance Git self-hosted) supporte OAuth2 nativement. C'est le candidat idéal pour commencer — l'intégration est documentée des deux côtés.
 
 Dans Authentik :
-1. Creer un **Provider** de type OAuth2/OIDC
-2. Creer une **Application** pointant vers ce provider
+1. Créer un **Provider** de type OAuth2/OIDC
+2. Créer une **Application** pointant vers ce provider
 3. Configurer les redirect URIs
 
 Dans Forgejo (`app.ini`) :
@@ -63,15 +63,15 @@ ENABLE = true
 ALLOW_ONLY_INTERNAL_REGISTRATION = false
 ```
 
-Premier test : clic sur "Se connecter avec Authentik" dans Forgejo → redirection vers la page de login Authentik → authentification → retour dans Forgejo, connecte.
+Premier test : clic sur "Se connecter avec Authentik" dans Forgejo → redirection vers la page de login Authentik → authentification → retour dans Forgejo, connecté.
 
-**Ca marche du premier coup.** Rare dans le monde du SSO.
+**Ça marche du premier coup.** Rare dans le monde du SSO.
 
-## Semaphore et Proxmox : integrations propres
+## Semaphore et Proxmox : intégrations propres
 
-Semaphore (mon orchestrateur Ansible) supporte aussi OIDC. Configuration similaire — provider Authentik, redirect URI, et c'est fait.
+Semaphore (notre orchestrateur Ansible) supporte aussi OIDC. Configuration similaire — provider Authentik, redirect URI, et c'est fait.
 
-Proxmox est plus interessant : il supporte **OpenID Connect** nativement depuis la version 7. Chaque noeud (pve1, pve2, pve3) peut etre configure pour accepter Authentik comme source d'authentification.
+Proxmox est plus intéressant : il supporte **OpenID Connect** nativement depuis la version 7. Chaque nœud (pve1, pve2, pve3) peut être configuré pour accepter Authentik comme source d'authentification.
 
 ```bash
 pveum realm add authentik --type openid \
@@ -80,7 +80,7 @@ pveum realm add authentik --type openid \
   --client-key <secret>
 ```
 
-Apres ca, la page de login Proxmox affiche un bouton "Login with Authentik" a cote du login PAM classique.
+Après ça, la page de login Proxmox affiche un bouton "Login with Authentik" à côté du login PAM classique.
 
 ## Jellyfin : le bug qui rend fou
 
@@ -88,13 +88,13 @@ Jellyfin a un plugin SSO qui supporte OIDC. Installation du plugin, configuratio
 
 Premier test : clic sur "Se connecter avec SSO"... **erreur 500.**
 
-Les logs Jellyfin montrent un probleme de validation de l'issuer URL. Apres investigation, le probleme est **KnownProxies**.
+Les logs Jellyfin montrent un problème de validation de l'issuer URL. Après investigation, le problème est **KnownProxies**.
 
-### Le piege KnownProxies
+### Le piège KnownProxies
 
-Jellyfin est derriere Traefik (reverse proxy). Quand Authentik redirige vers Jellyfin apres l'authentification, Jellyfin recoit la requete **via Traefik**. Mais si Jellyfin ne sait pas qu'il est derriere un proxy, il construit les URLs avec l'adresse interne au lieu de l'adresse publique.
+Jellyfin est derrière Traefik (reverse proxy). Quand Authentik redirige vers Jellyfin après l'authentification, Jellyfin reçoit la requête **via Traefik**. Mais si Jellyfin ne sait pas qu'il est derrière un proxy, il construit les URLs avec l'adresse interne au lieu de l'adresse publique.
 
-Resultat : Authentik envoie un token pour `https://jellyfin.pixelium.internal`, mais Jellyfin pense etre `http://localhost:8096`. Les URLs ne matchent pas → le token est rejete.
+Résultat : Authentik envoie un token pour `https://jellyfin.pixelium.internal`, mais Jellyfin pense être `http://localhost:8096`. Les URLs ne matchent pas → le token est rejeté.
 
 Le fix dans la configuration Jellyfin :
 
@@ -102,46 +102,46 @@ Le fix dans la configuration Jellyfin :
 <KnownProxies>192.168.1.110</KnownProxies>
 ```
 
-L'adresse de Traefik (CT 110). Ca dit a Jellyfin : "quand une requete vient de cette IP, fais confiance aux headers `X-Forwarded-*` pour construire les URLs."
+L'adresse de Traefik (CT 110). Ça dit à Jellyfin : "quand une requête vient de cette IP, fais confiance aux headers `X-Forwarded-*` pour construire les URLs."
 
-**Trois heures** a trouver cette ligne. Le message d'erreur ne mentionnait ni proxy ni forwarding — juste "invalid issuer".
+**Trois heures** pour trouver cette ligne. Le message d'erreur ne mentionnait ni proxy ni forwarding — juste "invalid issuer". Claude a fini par trouver un issue GitHub Jellyfin qui décrivait exactement le même symptôme.
 
-> Dans le monde des reverse proxies, 90% des bugs SSO sont des problemes de X-Forwarded-For/Proto/Host. La premiere chose a verifier, toujours.
+> Dans le monde des reverse proxies, 90% des bugs SSO sont des problèmes de X-Forwarded-For/Proto/Host. La première chose à vérifier, toujours.
 
-## Le resultat
+## Le résultat
 
-Aujourd'hui, je me connecte **une seule fois** a Authentik le matin, et tous les services reconnaissent ma session :
+Aujourd'hui, je me connecte **une seule fois** à Authentik le matin, et tous les services reconnaissent la session :
 
 - Forgejo ✅
 - Semaphore ✅
-- Proxmox (3 noeuds) ✅
-- Jellyfin ✅ (apres le fix KnownProxies)
-- Kavita — en cours d'integration
+- Proxmox (3 nœuds) ✅
+- Jellyfin ✅ (après le fix KnownProxies)
+- Kavita — en cours d'intégration
 
-Authentik gere aussi :
-- L'authentification a deux facteurs (TOTP + WebAuthn)
+Authentik gère aussi :
+- L'authentification à deux facteurs (TOTP + WebAuthn)
 - Les groupes et permissions
 - L'audit log de toutes les connexions
-- La recuperation de mot de passe
+- La récupération de mot de passe
 
-## Ce que j'ai appris
+## Ce que j'en retiens
 
 ### 1. Le SSO self-hosted est viable
 
-Authentik est mature, bien documente, et les integrations OIDC fonctionnent avec la plupart des services modernes. Le cout en ressources (~500 Mo RAM) est acceptable.
+Authentik est mature, bien documenté, et les intégrations OIDC fonctionnent avec la plupart des services modernes. Le coût en ressources (~500 Mo RAM) est acceptable.
 
-### 2. Reverse proxy + SSO = complexite
+### 2. Reverse proxy + SSO = complexité
 
-Le combo reverse proxy + SSO multiplie les points de friction. Chaque service a sa facon de gerer les headers X-Forwarded-*, et chaque implementation OIDC a ses particularites. Il faut de la patience.
+Le combo reverse proxy + SSO multiplie les points de friction. Chaque service a sa façon de gérer les headers X-Forwarded-*, et chaque implémentation OIDC a ses particularités. Il faut de la patience.
 
 ### 3. Commencer par le plus simple
 
-Forgejo en premier, c'etait le bon choix — integration propre, documentation claire, resultat rapide. Ca donne confiance pour attaquer les cas plus complexes (Jellyfin, Proxmox).
+Forgejo en premier, c'était le bon choix — intégration propre, documentation claire, résultat rapide. Ça donne confiance pour attaquer les cas plus complexes (Jellyfin, Proxmox).
 
 ### 4. Les logs sont (parfois) menteurs
 
-"Invalid issuer" quand le vrai probleme est un proxy mal declare. Les messages d'erreur OIDC sont notoirement cryptiques. Quand ca ne marche pas, verifier les URLs a chaque etape de la chaine est plus productif que lire le message d'erreur.
+"Invalid issuer" quand le vrai problème est un proxy mal déclaré. Les messages d'erreur OIDC sont notoirement cryptiques. Quand ça ne marche pas, vérifier les URLs à chaque étape de la chaîne est plus productif que lire le message d'erreur.
 
 ---
 
-*Stack : Authentik (Docker Compose, CT 118), integrations OAuth2/OIDC, Traefik reverse proxy. Services connectes : Forgejo, Semaphore, Proxmox x3, Jellyfin.*
+*Stack : Authentik (Docker Compose, CT 118), intégrations OAuth2/OIDC, Traefik reverse proxy. Services connectés : Forgejo, Semaphore, Proxmox ×3, Jellyfin.*

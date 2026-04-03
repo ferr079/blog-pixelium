@@ -2,18 +2,18 @@
 title: "Chiffrer le DNS : la faille que je ne voyais pas"
 date: 2026-03-20
 tags: ["securite", "dns", "reseau", "homelab"]
-summary: "J'avais HTTPS partout, SSH chiffre, mais mes requetes DNS circulaient en clair. Recit d'une prise de conscience et de la mise en place de DNS-over-TLS."
+summary: "On avait HTTPS partout, SSH chiffré, mais les requêtes DNS circulaient en clair. Récit d'une prise de conscience et de la mise en place de DNS-over-TLS."
 ---
 
-## La question qui a tout declenche
+## La question qui a tout déclenché
 
-Tout mon homelab est chiffre. Traefik gere le HTTPS via step-ca (mon CA interne, certificats ACME 90 jours). SSH est en key-only partout. Les connexions sensibles passent par Headscale.
+Tout le homelab est chiffré. Traefik gère le HTTPS via step-ca (notre CA interne, certificats ACME 90 jours). SSH est en key-only partout. Les connexions sensibles passent par Headscale.
 
-Puis un jour, en analysant le trafic reseau, la question s'est posee : **qu'est-ce qui circule encore en clair ?**
+Puis un jour, en analysant le trafic réseau, la question s'est posée : **qu'est-ce qui circule encore en clair ?**
 
-Reponse : le DNS. Chaque requete de resolution — chaque site visite, chaque API appelee, chaque service contacte — partait en **texte brut** sur le port 53.
+Réponse : le DNS. Chaque requête de résolution — chaque site visité, chaque API appelée, chaque service contacté — partait en **texte brut** sur le port 53.
 
-> HTTPS chiffre le contenu. Le DNS revele la destination. Savoir que quelqu'un consulte `banking.example.com` sans voir le contenu, c'est deja une information sensible.
+> HTTPS chiffre le contenu. Le DNS révèle la destination. Savoir que quelqu'un consulte `banking.example.com` sans voir le contenu, c'est déjà une information sensible.
 
 ## DoT vs DoH : le choix
 
@@ -21,25 +21,25 @@ Deux protocoles existent pour chiffrer le DNS :
 
 | | DNS-over-TLS (DoT) | DNS-over-HTTPS (DoH) |
 |---|---|---|
-| **Port** | 853 (dedie) | 443 (partage avec HTTPS) |
+| **Port** | 853 (dédié) | 443 (partagé avec HTTPS) |
 | **Transport** | TLS natif | HTTP/2 + TLS |
-| **Detectable** | Oui (port specifique) | Non (fondu dans le trafic web) |
-| **Performance** | Meilleur (moins d'overhead) | Legerement plus lourd |
-| **Debug** | Facile (port dedie = filtrable) | Difficile (mele au trafic web) |
+| **Détectable** | Oui (port spécifique) | Non (fondu dans le trafic web) |
+| **Performance** | Meilleur (moins d'overhead) | Légèrement plus lourd |
+| **Debug** | Facile (port dédié = filtrable) | Difficile (mêlé au trafic web) |
 
-Sur un reseau que je controle, la "furtivite" de DoH n'est pas un avantage. Je **veux** pouvoir filtrer et monitorer le trafic DNS facilement. J'ai choisi **DoT**.
+Sur un réseau qu'on contrôle, la "furtivité" de DoH n'est pas un avantage. On **veut** pouvoir filtrer et monitorer le trafic DNS facilement. On a choisi **DoT**.
 
 ## Le certificat TLS
 
-DoT necessite un certificat TLS valide sur le serveur DNS. Mon TechnitiumDNS (CT 100) a besoin d'un certificat pour `technitium.pixelium.internal`.
+DoT nécessite un certificat TLS valide sur le serveur DNS. Notre TechnitiumDNS (CT 100) a besoin d'un certificat pour `technitium.pixelium.internal`.
 
-La bonne nouvelle : j'ai deja step-ca (CT 102) qui fait office de CA interne. La configuration DoT dans TechnitiumDNS est native — il suffit de pointer vers le certificat et la cle privee.
+La bonne nouvelle : on a déjà step-ca (CT 102) qui fait office de CA interne. La configuration DoT dans TechnitiumDNS est native — il suffit de pointer vers le certificat et la clé privée.
 
-Le certificat a une duree de **90 jours**, comme tous mes certificats Traefik. C'est un choix delibere : des certificats courts forcent a automatiser le renouvellement. Si l'automatisation casse, on le sait vite.
+Le certificat a une durée de **90 jours**, comme tous les certificats Traefik. C'est un choix délibéré : des certificats courts forcent à automatiser le renouvellement. Si l'automatisation casse, on le sait vite.
 
 ## Configurer le client : terre2
 
-Ma workstation Bluefin utilise `systemd-resolved` pour la resolution DNS. La configuration DoT :
+Ma workstation Bluefin utilise `systemd-resolved` pour la résolution DNS. La configuration DoT :
 
 ```ini
 # /etc/systemd/resolved.conf.d/dot.conf
@@ -49,33 +49,33 @@ DNSSEC=allow-downgrade
 DNSOverTLS=yes
 ```
 
-Le `#technitium.pixelium.internal` apres l'IP est le **SNI** (Server Name Indication). C'est crucial — sans ca, le client TLS ne peut pas verifier l'identite du serveur. Il sait qu'il parle a `192.168.1.100`, mais il ne sait pas si c'est bien le serveur DNS qu'il attend.
+Le `#technitium.pixelium.internal` après l'IP est le **SNI** (Server Name Indication). C'est crucial — sans ça, le client TLS ne peut pas vérifier l'identité du serveur. Il sait qu'il parle à `192.168.1.100`, mais il ne sait pas si c'est bien le serveur DNS qu'il attend.
 
 ```bash
 systemctl restart systemd-resolved
 ```
 
-### Le piege du firewall — 45 minutes perdues
+### Le piège du firewall — 45 minutes perdues
 
-Premier test : echec total. Les requetes DoT ne passaient pas. `resolvectl status` montrait le serveur configure mais aucune reponse.
+Premier test : échec total. Les requêtes DoT ne passaient pas. `resolvectl status` montrait le serveur configuré mais aucune réponse.
 
-J'ai verifie :
+On a vérifié :
 - TechnitiumDNS ? Tourne. Port 853 ouvert. Certificat valide.
-- Reseau ? `ping 192.168.1.100` repond normalement.
+- Réseau ? `ping 192.168.1.100` répond normalement.
 - DNS classique ? Port 53 fonctionne toujours.
 
-Le probleme etait **firewalld sur terre2**. Le port 853/TCP n'est pas dans la zone de confiance par defaut. Mon propre firewall bloquait les connexions sortantes vers DoT.
+Le problème était **firewalld sur terre2**. Le port 853/TCP n'est pas dans la zone de confiance par défaut. Mon propre firewall bloquait les connexions sortantes vers DoT.
 
 ```bash
 firewall-cmd --permanent --add-port=853/tcp
 firewall-cmd --reload
 ```
 
-Le message d'erreur de `systemd-resolved` etait juste "connection timed out" — aucune indication que c'etait le firewall **local** (pas celui du serveur) qui bloquait. 45 minutes a chercher du cote serveur alors que le probleme etait sous mes yeux.
+Le message d'erreur de `systemd-resolved` était juste "connection timed out" — aucune indication que c'était le firewall **local** (pas celui du serveur) qui bloquait. 45 minutes à chercher du côté serveur alors que le problème était sous mes yeux.
 
-> Quand le reseau ne marche pas, on regarde le serveur distant. Reflexe classique. Mais parfois le coupable, c'est le client lui-meme.
+> Quand le réseau ne marche pas, on regarde le serveur distant. Réflexe classique. Mais parfois le coupable, c'est le client lui-même.
 
-## Verification
+## Vérification
 
 ```bash
 resolvectl status
@@ -88,17 +88,15 @@ Link 2 (enp5s0)
     Current DNS Server: 192.168.1.100#technitium.pixelium.internal
 ```
 
-Le `+DNSOverTLS` confirme que le chiffrement est actif. Toutes les requetes DNS de terre2 passent maintenant en TLS.
-
-## Le DNS secondaire
-
-Mon deuxieme serveur TechnitiumDNS (CT 101 sur pve2) fait de la replication de zone AXFR depuis le primaire. Il a egalement ete configure en DoT.
-
-Par contre, le transfert de zone entre les deux serveurs (AXFR) reste en TCP classique sur le reseau prive. C'est un choix delibere : AXFR chiffre ajouterait de la complexite pour un gain marginal — les deux CTs sont sur le meme LAN controle, et le contenu des zones n'est pas sensible.
+Le `+DNSOverTLS` confirme que le chiffrement est actif. Toutes les requêtes DNS de terre2 passent maintenant en TLS.
 
 ## Le DNS secondaire aussi en DoT
 
-Pour les clients du LAN qui utilisent le DNS secondaire (en fallback), j'ai configure CT 101 avec son propre certificat DoT. Le resolver de terre2 a les deux :
+Notre deuxième serveur TechnitiumDNS (CT 101 sur pve2) fait de la réplication de zone AXFR depuis le primaire. Il a également été configuré en DoT.
+
+Le transfert de zone entre les deux serveurs (AXFR) reste en TCP classique sur le réseau privé. C'est un choix délibéré : AXFR chiffré ajouterait de la complexité pour un gain marginal — les deux CTs sont sur le même LAN contrôlé, et le contenu des zones n'est pas sensible.
+
+Pour les clients du LAN qui utilisent le DNS secondaire en fallback :
 
 ```ini
 DNS=192.168.1.100#technitium.pixelium.internal 192.168.1.101#technitium2.pixelium.internal
@@ -108,29 +106,29 @@ Si le primaire tombe, le secondaire prend le relais — toujours en DoT.
 
 ## Blocklists : le bonus
 
-Tant que j'etais dans la configuration DNS, j'ai active les **blocklists** sur TechnitiumDNS :
-- **OISD** — la liste la plus complete et la mieux maintenue
-- **Hagezi** — complementaire, focus sur la telemetrie
+Tant qu'on était dans la configuration DNS, on a activé les **blocklists** sur TechnitiumDNS :
+- **OISD** — la liste la plus complète et la mieux maintenue
+- **Hagezi** — complémentaire, focus sur la télémétrie
 
-Le DNS ne fait plus que resoudre des noms — il filtre aussi les domaines de tracking, de pub, et de telemetrie. C'est du Pi-hole integre dans le resolver.
+Le DNS ne fait plus que résoudre des noms — il filtre aussi les domaines de tracking, de pub, et de télémétrie. C'est du Pi-hole intégré dans le résolveur.
 
-## Ce que j'ai appris
+## Ce que j'en retiens
 
-### 1. La securite est une chaine
+### 1. La sécurité est une chaîne
 
-HTTPS sans DNS chiffre, c'est une porte blindee avec une fenetre ouverte. Chaque protocole est un vecteur potentiel de fuite d'information. Il faut les traiter un par un, methodiquement.
+HTTPS sans DNS chiffré, c'est une porte blindée avec une fenêtre ouverte. Chaque protocole est un vecteur potentiel de fuite d'information. Il faut les traiter un par un, méthodiquement.
 
-### 2. Le cout du chiffrement DNS est nul
+### 2. Le coût du chiffrement DNS est nul
 
-La latence ajoutee par TLS est de l'ordre de la milliseconde — indectectable a l'usage. Il n'y a **aucune raison** de ne pas chiffrer le DNS en 2026.
+La latence ajoutée par TLS est de l'ordre de la milliseconde — indétectable à l'usage. Il n'y a **aucune raison** de ne pas chiffrer le DNS en 2026.
 
-### 3. Le debug reseau, c'est de la patience
+### 3. Le debug réseau, c'est de la patience
 
-45 minutes sur un probleme de firewall local. C'est frustrant, mais c'est aussi comme ca qu'on apprend a debugger systematiquement : verifier chaque couche, du client au serveur, sans presuppose.
+45 minutes sur un problème de firewall local. C'est frustrant, mais c'est aussi comme ça qu'on apprend à débugger systématiquement : vérifier chaque couche, du client au serveur, sans présupposé.
 
 ### 4. DoT > DoH pour un homelab
 
-Sur un reseau qu'on controle, la transparence est plus utile que la furtivite. Le port dedie 853 rend le monitoring et le debug bien plus simples que DoH noye dans le port 443.
+Sur un réseau qu'on contrôle, la transparence est plus utile que la furtivité. Le port dédié 853 rend le monitoring et le debug bien plus simples que DoH noyé dans le port 443.
 
 ---
 
