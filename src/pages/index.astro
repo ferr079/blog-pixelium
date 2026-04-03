@@ -6,17 +6,10 @@ import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 import { getReadingTime } from '../utils/reading-time';
 
-const ARTICLES_PER_PAGE = 8;
-
-const allPosts = (await getCollection('posts', (p) => !p.data.draft))
+const posts = (await getCollection('posts', (p) => !p.data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-const page = Number(Astro.url.searchParams.get('page') ?? '1');
-const totalPages = Math.ceil(allPosts.length / ARTICLES_PER_PAGE);
-const currentPage = Math.max(1, Math.min(page, totalPages));
-const posts = allPosts.slice((currentPage - 1) * ARTICLES_PER_PAGE, currentPage * ARTICLES_PER_PAGE);
-
-const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 ---
 
 <Base title="pixelium // blog — Journal de bord technique">
@@ -48,8 +41,8 @@ const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
     <section class="articles">
       <div class="articles-inner">
         <div class="section-header reveal">
-          <h2><span class="hash">#</span> Articles{currentPage > 1 ? ` — page ${currentPage}` : ''}</h2>
-          <span class="section-stats">{allPosts.length} articles &middot; {allTags.length} sujets</span>
+          <h2><span class="hash">#</span> Articles</h2>
+          <span class="section-stats">{posts.length} articles &middot; {allTags.length} sujets</span>
         </div>
         <div class="articles-list">
           {posts.map((post) => (
@@ -64,23 +57,6 @@ const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
             />
           ))}
         </div>
-        {totalPages > 1 && (
-          <nav class="pagination reveal" aria-label="Pagination">
-            {currentPage > 1 && (
-              <a href={currentPage === 2 ? '/' : `/?page=${currentPage - 1}`} class="page-link prev">
-                <span class="page-arrow">&larr;</span> Precedents
-              </a>
-            )}
-            <span class="page-info">
-              Page <span class="page-current">{currentPage}</span> sur {totalPages}
-            </span>
-            {currentPage < totalPages && (
-              <a href={`/?page=${currentPage + 1}`} class="page-link next">
-                Suivants <span class="page-arrow">&rarr;</span>
-              </a>
-            )}
-          </nav>
-        )}
       </div>
     </section>
   </main>
@@ -223,48 +199,6 @@ const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
     flex-direction: column;
     gap: 1.25rem;
   }
-
-  /* ---- PAGINATION ---- */
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-border-subtle);
-  }
-
-  .page-link {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
-    transition: all 0.2s;
-  }
-
-  .page-link:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-
-  .page-arrow {
-    display: inline-block;
-    transition: transform 0.2s;
-  }
-
-  .prev:hover .page-arrow { transform: translateX(-3px); }
-  .next:hover .page-arrow { transform: translateX(3px); }
-
-  .page-info {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--color-text-faint);
-  }
-
-  .page-current { color: var(--color-accent); font-weight: 600; }
 
   @media (max-width: 640px) {
     .hero { padding: 3rem 1rem 2rem; }
