@@ -1,8 +1,8 @@
 ---
-title: "Chiffrer le DNS : la faille que je ne voyais pas"
+title: "Chiffrer le DNS : la faille que nous ne voyions pas"
 date: 2026-03-20
 tags: ["securite", "dns", "reseau", "homelab"]
-summary: "On avait HTTPS partout, SSH chiffré, mais les requêtes DNS circulaient en clair. Récit d'une prise de conscience et de la mise en place de DNS-over-TLS."
+summary: "Nous avions HTTPS partout, SSH chiffré, mais les requêtes DNS circulaient en clair. Récit d'une prise de conscience et de la mise en place de DNS-over-TLS."
 ---
 
 ## La question qui a tout déclenché
@@ -27,19 +27,19 @@ Deux protocoles existent pour chiffrer le DNS :
 | **Performance** | Meilleur (moins d'overhead) | Légèrement plus lourd |
 | **Debug** | Facile (port dédié = filtrable) | Difficile (mêlé au trafic web) |
 
-Sur un réseau qu'on contrôle, la "furtivité" de DoH n'est pas un avantage. On **veut** pouvoir filtrer et monitorer le trafic DNS facilement. On a choisi **DoT**.
+Sur un réseau qu'on contrôle, la "furtivité" de DoH n'est pas un avantage. Nous **voulions** pouvoir filtrer et monitorer le trafic DNS facilement. Nous avons choisi **DoT**.
 
 ## Le certificat TLS
 
 DoT nécessite un certificat TLS valide sur le serveur DNS. Notre TechnitiumDNS (CT 100) a besoin d'un certificat pour `technitium.pixelium.internal`.
 
-La bonne nouvelle : on a déjà step-ca (CT 102) qui fait office de CA interne. La configuration DoT dans TechnitiumDNS est native — il suffit de pointer vers le certificat et la clé privée.
+La bonne nouvelle : nous avons déjà step-ca (CT 102) qui fait office de CA interne. La configuration DoT dans TechnitiumDNS est native — il suffit de pointer vers le certificat et la clé privée.
 
 Le certificat a une durée de **90 jours**, comme tous les certificats Traefik. C'est un choix délibéré : des certificats courts forcent à automatiser le renouvellement. Si l'automatisation casse, on le sait vite.
 
 ## Configurer le client : terre2
 
-Ma workstation Bluefin utilise `systemd-resolved` pour la résolution DNS. La configuration DoT :
+La workstation de Stéphane (Bluefin) utilise `systemd-resolved` pour la résolution DNS. La configuration DoT :
 
 ```ini
 # /etc/systemd/resolved.conf.d/dot.conf
@@ -59,19 +59,19 @@ systemctl restart systemd-resolved
 
 Premier test : échec total. Les requêtes DoT ne passaient pas. `resolvectl status` montrait le serveur configuré mais aucune réponse.
 
-On a vérifié :
+Nous avons vérifié :
 - TechnitiumDNS ? Tourne. Port 853 ouvert. Certificat valide.
 - Réseau ? `ping 192.168.1.100` répond normalement.
 - DNS classique ? Port 53 fonctionne toujours.
 
-Le problème était **firewalld sur terre2**. Le port 853/TCP n'est pas dans la zone de confiance par défaut. Mon propre firewall bloquait les connexions sortantes vers DoT.
+Le problème était **firewalld sur terre2**. Le port 853/TCP n'est pas dans la zone de confiance par défaut. Le firewall de Stéphane bloquait les connexions sortantes vers DoT.
 
 ```bash
 firewall-cmd --permanent --add-port=853/tcp
 firewall-cmd --reload
 ```
 
-Le message d'erreur de `systemd-resolved` était juste "connection timed out" — aucune indication que c'était le firewall **local** (pas celui du serveur) qui bloquait. 45 minutes à chercher du côté serveur alors que le problème était sous mes yeux.
+Le message d'erreur de `systemd-resolved` était juste "connection timed out" — aucune indication que c'était le firewall **local** (pas celui du serveur) qui bloquait. 45 minutes à chercher du côté serveur alors que le problème était sur terre2.
 
 > Quand le réseau ne marche pas, on regarde le serveur distant. Réflexe classique. Mais parfois le coupable, c'est le client lui-même.
 
@@ -106,13 +106,13 @@ Si le primaire tombe, le secondaire prend le relais — toujours en DoT.
 
 ## Blocklists : le bonus
 
-Tant qu'on était dans la configuration DNS, on a activé les **blocklists** sur TechnitiumDNS :
+Tant que nous étions dans la configuration DNS, nous avons activé les **blocklists** sur TechnitiumDNS :
 - **OISD** — la liste la plus complète et la mieux maintenue
 - **Hagezi** — complémentaire, focus sur la télémétrie
 
 Le DNS ne fait plus que résoudre des noms — il filtre aussi les domaines de tracking, de pub, et de télémétrie. C'est du Pi-hole intégré dans le résolveur.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. La sécurité est une chaîne
 

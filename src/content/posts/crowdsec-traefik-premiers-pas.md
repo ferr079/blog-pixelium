@@ -1,5 +1,5 @@
 ---
-title: "CrowdSec : quand la communauté défend mon homelab"
+title: "CrowdSec : quand la communauté défend le homelab"
 date: 2026-03-26
 tags: ["securite", "traefik", "homelab", "crowdsec"]
 summary: "Installer un IPS communautaire sur le reverse proxy, découvrir qu'il tourne avec 46 scénarios de détection — et réaliser plus tard qu'il était mal configuré depuis le début."
@@ -9,11 +9,11 @@ summary: "Installer un IPS communautaire sur le reverse proxy, découvrir qu'il 
 
 Les logs Traefik, quand on prend le temps de les lire, racontent des histoires inquiétantes. Des requêtes vers `/wp-admin/`, `/phpmyadmin/`, `/.env` — des scanners automatisés qui testent chaque IP d'Internet à la recherche de failles connues.
 
-Mon homelab n'est pas exposé sur Internet (tout est derrière la Freebox en NAT), mais ces logs m'ont fait réfléchir : **qu'est-ce qui se passe quand je fais du port forwarding temporaire ?** Et surtout, est-ce qu'on peut mieux se défendre qu'avec un simple pare-feu ?
+Le homelab n'est pas exposé sur Internet (tout est derrière la Freebox en NAT), mais ces logs posent une question : **qu'est-ce qui se passe en cas de port forwarding temporaire ?** Et surtout, peut-on mieux se défendre qu'avec un simple pare-feu ?
 
 ## Pourquoi CrowdSec et pas fail2ban
 
-On a d'abord regardé fail2ban — l'outil historique. Il lit les logs, détecte les patterns d'attaque, bannit les IPs. Simple, éprouvé, bien documenté.
+Nous avons d'abord regardé fail2ban — l'outil historique. Il lit les logs, détecte les patterns d'attaque, bannit les IPs. Simple, éprouvé, bien documenté.
 
 Mais CrowdSec apporte une dimension que fail2ban n'a pas : **l'intelligence collective**. Quand un membre de la communauté détecte une IP malveillante, cette information est partagée avec tous les autres via la Central API (CAPI). C'est du renseignement collaboratif à l'échelle mondiale.
 
@@ -29,7 +29,7 @@ Mais CrowdSec apporte une dimension que fail2ban n'a pas : **l'intelligence coll
 
 ## L'installation sur CT 110
 
-CrowdSec est un **add-on** sur le même conteneur que Traefik (CT 110). Pas de VM dédiée — ça tourne à côté du reverse proxy, ce qui est logique puisqu'il analyse ses logs.
+CrowdSec est un **add-on** sur le même conteneur que Traefik (CT 110). Pas de VM dédiée — il tourne à côté du reverse proxy, ce qui est logique puisqu'il analyse ses logs.
 
 ```bash
 curl -s https://install.crowdsec.net | bash
@@ -51,13 +51,13 @@ api:
     listen_uri: 127.0.0.1:8081
 ```
 
-On a passé 30 minutes à comprendre pourquoi le dashboard Traefik ne répondait plus après l'installation de CrowdSec. Les deux se battaient pour le même port, et CrowdSec gagnait (il démarre avant Traefik dans l'ordre systemd).
+Le dashboard Traefik a cessé de répondre après l'installation de CrowdSec. Les deux se battaient pour le même port, et CrowdSec gagnait (il démarre avant Traefik dans l'ordre systemd). 30 minutes de debug pour comprendre.
 
 **Leçon** : toujours vérifier les ports par défaut avant d'installer un nouveau service sur un CT existant.
 
 ### L'acquisition des logs Traefik
 
-Pour que CrowdSec analyse les logs, il faut lui dire où les trouver :
+Pour que CrowdSec analyse les logs, il faut lui indiquer où les trouver :
 
 ```yaml
 # /etc/crowdsec/acquis.d/traefik.yaml
@@ -82,7 +82,7 @@ cscli hub update && cscli hub upgrade
 cscli scenarios list
 ```
 
-Ça couvre les scans SSH, les brute-force HTTP, les crawlers agressifs, les exploits WordPress, les scans de ports, et bien plus. Chaque scénario est un fichier YAML qui décrit un pattern d'attaque — beaucoup plus expressif que les regex fail2ban.
+Couverture : scans SSH, brute-force HTTP, crawlers agressifs, exploits WordPress, scans de ports. Chaque scénario est un fichier YAML qui décrit un pattern d'attaque — beaucoup plus expressif que les regex fail2ban.
 
 ## La chaîne iptables
 
@@ -92,17 +92,17 @@ Le bouncer crée sa propre chaîne `CROWDSEC_CHAIN` dans la table INPUT d'iptabl
 iptables -L CROWDSEC_CHAIN
 ```
 
-Ce design est propre : les règles CrowdSec sont isolées dans leur propre chaîne. Si on désinstalle le bouncer, la chaîne disparaît — pas de pollution des règles existantes.
+Ce design est propre : les règles CrowdSec sont isolées dans leur propre chaîne. Si le bouncer est désinstallé, la chaîne disparaît — pas de pollution des règles existantes.
 
-Les IPs du réseau local (RFC 1918) sont **whitelistées par défaut**. Choix sensé — on ne veut pas se bannir soi-même depuis le LAN.
+Les IPs du réseau local (RFC 1918) sont **whitelistées par défaut**. Choix sensé — pas question de se bannir soi-même depuis le LAN.
 
 ## La découverte qui a tout remis en question
 
-Trois semaines après l'installation, on a déployé **PentAGI** (un agent de pentest autonome) pour scanner l'infra. Son rapport contenait une ligne qui m'a glacé :
+Trois semaines après l'installation, nous avons déployé **PentAGI** (un agent de pentest autonome) pour scanner l'infra. Son rapport contenait une ligne qui a glacé Stéphane :
 
 > **CrowdSec LAPI accessible sur 0.0.0.0:8081** — l'API locale est exposée sur toutes les interfaces réseau, pas seulement localhost.
 
-On avait changé le port de 8080 à 8081, mais on avait oublié de changer l'adresse de bind. `0.0.0.0` signifie "écoute sur toutes les interfaces" — n'importe qui sur le LAN pouvait interroger l'API CrowdSec, lister les décisions, et potentiellement les manipuler.
+Le port avait été changé de 8080 à 8081, mais l'adresse de bind n'avait pas été corrigée. `0.0.0.0` signifie "écoute sur toutes les interfaces" — n'importe qui sur le LAN pouvait interroger l'API CrowdSec, lister les décisions, et potentiellement les manipuler.
 
 Le fix :
 
@@ -118,15 +118,15 @@ api:
     listen_uri: 127.0.0.1:8081
 ```
 
-Un caractère de différence. `127.0.0.1` au lieu de `0.0.0.0`. C'est le genre d'erreur qui passe inaperçue pendant des semaines parce que tout "fonctionne" — le service répond, les scénarios tournent, les IPs sont bloquées. Mais la surface d'attaque était ouverte.
+Un caractère de différence. `127.0.0.1` au lieu de `0.0.0.0`. Le genre d'erreur qui passe inaperçue pendant des semaines parce que tout "fonctionne" — le service répond, les scénarios tournent, les IPs sont bloquées. Mais la surface d'attaque était ouverte.
 
-> Installer un outil de sécurité ne rend pas automatiquement plus sécurisé. Encore faut-il le configurer correctement. L'ironie d'un IPS mal configuré qui expose sa propre API n'est pas perdue pour moi.
+> Installer un outil de sécurité ne rend pas automatiquement plus sécurisé. Encore faut-il le configurer correctement. L'ironie d'un IPS mal configuré qui expose sa propre API est une leçon qui mérite d'être retenue.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. La sécurité en couches
 
-CrowdSec est une couche parmi d'autres — il ne remplace pas le pare-feu, il le complète. Notre setup :
+CrowdSec est une couche parmi d'autres — il ne remplace pas le pare-feu, il le complète. Le setup actuel :
 - **Freebox** : NAT, pas de port forwarding permanent
 - **Proxmox firewall** : politique DROP par défaut
 - **CrowdSec** : détection comportementale + blocklists communautaires
@@ -138,7 +138,7 @@ En quelques jours, les blocklists CAPI avaient déjà enrichi la base avec des m
 
 ### 3. Auditer son propre travail
 
-Sans PentAGI, on aurait probablement gardé la LAPI sur `0.0.0.0` pendant des mois. Ça m'a convaincu de l'importance de **scanner sa propre infra régulièrement** — même (surtout) les outils de sécurité.
+Sans PentAGI, la LAPI serait probablement restée sur `0.0.0.0` pendant des mois. Cela confirme l'importance de **scanner sa propre infra régulièrement** — même (surtout) les outils de sécurité.
 
 ### 4. Les commandes du quotidien
 
@@ -149,7 +149,7 @@ cscli metrics show acquisition  # Stats d'analyse des logs
 cscli hub update && cscli hub upgrade  # Mise à jour scénarios
 ```
 
-Ces quatre commandes sont devenues mon réflexe hebdomadaire.
+Ces quatre commandes sont devenues un réflexe hebdomadaire.
 
 ---
 

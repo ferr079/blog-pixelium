@@ -1,5 +1,5 @@
 ---
-title: "De zéro à dashboard live : quand mon site parle à mon homelab"
+title: "De zéro à dashboard live : quand le site parle au homelab"
 date: 2026-04-01
 tags: ["cloudflare", "automatisation", "homelab", "web"]
 summary: "Connecter un site statique Astro à une infrastructure homelab live — via Cloudflare R2, KV, Workers et un script qui pousse 14 métriques toutes les heures."
@@ -9,9 +9,9 @@ summary: "Connecter un site statique Astro à une infrastructure homelab live �
 
 Le portfolio (pixelium.win) est un site Astro déployé sur Cloudflare Workers. Statique, rapide, fiable. Mais **figé** : les stats affichées ("30+ conteneurs", "20+ services") étaient des nombres codés en dur dans le HTML.
 
-Le problème : ces nombres changent. On ajoute des services, on en décommissionne d'autres, les métriques CTF évoluent. Chaque mise à jour demandait un commit + deploy. Pour un site qui prétend montrer une infra vivante, c'est ironique.
+Le problème : ces nombres changent. Nous ajoutons des services, nous en décommissionnons d'autres, les métriques CTF évoluent. Chaque mise à jour demandait un commit + deploy. Pour un site qui prétend montrer une infra vivante, c'est ironique.
 
-On voulait que le site **affiche des données live** sans devenir une SPA avec un backend.
+Nous voulions que le site **affiche des données live** sans devenir une SPA avec un backend.
 
 ## L'architecture
 
@@ -57,7 +57,7 @@ Un custom domain `assets.pixelium.win` pointe vers le bucket R2. Les images sont
 
 Cloudflare KV est un key-value store distribué. Latence de lecture : ~10ms depuis n'importe où dans le monde. Parfait pour stocker des métriques qui changent toutes les heures.
 
-On a créé deux namespaces :
+Nous avons créé deux namespaces :
 - `pixelium-stats` : métriques du portfolio (commits, services, uptime...)
 - `pixelium-status` : état des services (UP/DOWN, CPU, RAM)
 
@@ -135,7 +135,7 @@ Le petit point vert pulse à côté de chaque brique — c'est le signal que les
 
 ## La page /status
 
-On a poussé le concept plus loin avec une page dédiée qui affiche :
+Nous avons poussé le concept plus loin avec une page dédiée qui affiche :
 - L'état de **chaque service** (33 services, UP/DOWN)
 - Les **3 nœuds Proxmox** avec CPU et RAM
 - L'**uptime sur 30 jours** (historique D1)
@@ -144,7 +144,7 @@ C'est un dashboard public du homelab — tout visiteur peut voir ce qui tourne e
 
 ## La révélation des chiffres réels
 
-Le moment le plus intéressant de ce projet n'a pas été technique. C'est quand on a comparé les stats hardcodées du site avec les chiffres réels :
+Le moment le plus intéressant de ce projet n'a pas été technique. C'est quand nous avons comparé les stats hardcodées du site avec les chiffres réels :
 
 | Stat | Hardcodé | Réel |
 |---|---|---|
@@ -152,9 +152,9 @@ Le moment le plus intéressant de ce projet n'a pas été technique. C'est quand
 | "30+ LXC containers" | 30 | **36** |
 | Commits (30j) | non affiché | **365** |
 
-Le site **sous-estimait** l'infra. Les chiffres réels étaient plus impressionnants que ce qu'on avait mis. Ça montre l'importance des données live — la réalité dépasse souvent ce qu'on pense savoir.
+Le site **sous-estimait** l'infra. Les chiffres réels étaient plus impressionnants que ce que nous avions mis. Ça montre l'importance des données live — la réalité dépasse souvent ce qu'on pense savoir.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. Cloudflare gratuit est suffisant
 

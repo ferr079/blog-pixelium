@@ -1,31 +1,31 @@
 ---
-title: "Mon homelab fait ses backups pendant que je dors"
+title: "Le homelab fait ses backups pendant que Stéphane dort"
 date: 2026-04-02
 tags: ["automatisation", "proxmox", "backup", "homelab"]
-summary: "Comment on a automatisé une chaîne de 9 étapes — du Wake-on-LAN d'un serveur éteint jusqu'à son extinction après backup de 33 conteneurs. Le tout pendant que je dors."
+summary: "9 étapes automatisées — du Wake-on-LAN d'un serveur éteint jusqu'à son extinction après backup de 33 conteneurs. Le tout sans intervention humaine."
 ---
 
 ## Le problème
 
-J'ai 33 conteneurs LXC répartis sur deux nœuds Proxmox. Des services critiques — DNS, reverse proxy, Forgejo, Vaultwarden — et des services de confort — Jellyfin, Kavita, FreshRSS. Tous ont besoin d'être sauvegardés.
+33 conteneurs LXC répartis sur deux nœuds Proxmox. Des services critiques — DNS, reverse proxy, Forgejo, Vaultwarden — et des services de confort — Jellyfin, Kavita, FreshRSS. Tous ont besoin d'être sauvegardés.
 
-Le hic : mon serveur de backup (pve3, un vieux i7-2600K) **n'est pas allumé 24/7**. C'est une machine de bureau reconvertie — bruyante, gourmande en watts, dans la même pièce que moi. La laisser tourner en permanence juste pour recevoir des backups une fois par semaine, c'est du gaspillage.
+Le hic : pve3 (le serveur de backup, un vieux i7-2600K) **n'est pas allumé 24/7**. C'est une machine de bureau reconvertie — bruyante, gourmande en watts, dans la chambre de Stéphane. La laisser tourner en permanence juste pour recevoir des backups une fois par semaine, c'est du gaspillage.
 
-Pendant des semaines, ma routine de backup c'était :
-1. Me lever
-2. Allumer pve3 manuellement
-3. Lancer les backups depuis l'interface Proxmox
-4. Attendre. Longtemps.
-5. Éteindre pve3
-6. Oublier la moitié du temps
+Pendant des semaines, la routine de backup c'était :
+1. Stéphane se lève
+2. Allume pve3 manuellement
+3. Lance les backups depuis l'interface Proxmox
+4. Attend. Longtemps.
+5. Éteint pve3
+6. Oublie la moitié du temps
 
 > Un backup qu'on oublie de faire, c'est un backup qui n'existe pas. Et un backup qui n'existe pas, c'est un désastre qui attend son heure.
 
 ## L'idée
 
-Et si le homelab faisait tout ça **tout seul** ? Réveiller pve3, lancer les sauvegardes, nettoyer les anciennes, éteindre la machine. Le tout pendant que je dors, sans intervention humaine.
+Et si le homelab faisait tout ça **tout seul** ? Réveiller pve3, lancer les sauvegardes, nettoyer les anciennes, éteindre la machine. Le tout pendant que Stéphane dort, sans intervention humaine.
 
-Avec Claude, on a découpé le plan en 9 étapes :
+Nous avons découpé le plan en 9 étapes :
 
 | Étape | Action | Pourquoi |
 |---|---|---|
@@ -43,7 +43,7 @@ Avec Claude, on a découpé le plan en 9 étapes :
 
 ## Wake-on-LAN : réveiller un PC endormi
 
-La première brique, c'est WOL — **Wake-on-LAN**. Le principe : on envoie un "magic packet" sur le réseau, la carte réseau du PC éteint le détecte et démarre la machine.
+La première brique, c'est WOL — **Wake-on-LAN**. Le principe : envoyer un "magic packet" sur le réseau, la carte réseau du PC éteint le détecte et démarre la machine.
 
 ```bash
 # Envoyer le magic packet à pve3 depuis pve1
@@ -57,7 +57,7 @@ WOL ne marche que si :
 - La carte réseau est sur le bon bus PCIe (les ports USB-Ethernet ne supportent pas WOL)
 - La machine est éteinte "proprement" (shutdown, pas power off brutal)
 
-Sur pve3, le WOL était désactivé dans le BIOS. Un réglage enfoui dans les menus "Power Management" que je n'avais jamais touché. 20 minutes à chercher pourquoi le magic packet ne faisait rien avant de penser à vérifier le BIOS.
+Sur pve3, le WOL était désactivé dans le BIOS. Un réglage enfoui dans les menus "Power Management" que personne n'avait touché. 20 minutes à chercher pourquoi le magic packet ne faisait rien avant que Stéphane pense à vérifier le BIOS.
 
 > Règle d'or du debug homelab : quand le logiciel ne marche pas, vérifier le hardware. Quand le hardware ne marche pas, vérifier le BIOS.
 
@@ -82,7 +82,7 @@ wait_for_host() {
 wait_for_host 192.168.1.253
 ```
 
-Claude a insisté sur un point : pas de `ping` ici. Ce n'est pas parce que la machine répond au ping que PBS est prêt. On teste avec SSH, qui ne répond que quand le système est complètement démarré.
+Point important : pas de `ping` ici. Ce n'est pas parce que la machine répond au ping que PBS est prêt. Le test SSH ne répond que quand le système est complètement démarré.
 
 ## Activer le stockage PBS
 
@@ -96,7 +96,7 @@ ssh root@192.168.1.252 "pvesm set pbs-pve3 --disable 0"  # sur pve2
 
 ### Le piège de la propagation
 
-Après `pvesm set`, le storage n'est pas immédiatement disponible. Il faut quelques secondes pour que le daemon PVE détecte le changement et établisse la connexion au datastore. On a ajouté un `sleep 10` à ce moment-là. Ce n'est pas élégant, mais c'est fiable.
+Après `pvesm set`, le storage n'est pas immédiatement disponible. Il faut quelques secondes pour que le daemon PVE détecte le changement et établisse la connexion au datastore. Un `sleep 10` à ce moment-là. Ce n'est pas élégant, mais c'est fiable.
 
 ## Backups parallèles
 
@@ -125,7 +125,7 @@ Le `--mode snapshot` est crucial : il fait un snapshot LXC avant de sauvegarder,
 
 ## Pruning et garbage collection
 
-Après les backups, on nettoie :
+Après les backups, nettoyage :
 
 ```bash
 # Garder les 3 derniers backups, supprimer le reste
@@ -150,7 +150,7 @@ ssh root@192.168.1.252 "pvesm set pbs-pve3 --disable 1"
 ssh root@192.168.1.253 "shutdown -h now"
 ```
 
-On désactive le storage **avant** d'éteindre pve3. Sinon, pve1 et pve2 vont détecter la perte de connexion et afficher des alertes dans l'interface — du bruit inutile.
+Le storage est désactivé **avant** d'éteindre pve3. Sinon, pve1 et pve2 détectent la perte de connexion et affichent des alertes dans l'interface — du bruit inutile.
 
 ## Le résultat
 
@@ -174,11 +174,11 @@ Le script tourne en **cron sur pve1** :
 
 Pourquoi 00h08 et pas minuit pile ? Parce que minuit c'est l'heure où tous les crons du monde se déclenchent. Décaler de quelques minutes évite les contentions.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. L'automatisation change la nature du backup
 
-Quand c'était manuel, je faisais un backup toutes les deux semaines — quand j'y pensais. Maintenant c'est **chaque lundi, sans exception**. La fiabilité n'est pas une question de volonté, c'est une question de système.
+Quand c'était manuel, Stéphane faisait un backup toutes les deux semaines — quand il y pensait. Maintenant c'est **chaque lundi, sans exception**. La fiabilité n'est pas une question de volonté, c'est une question de système.
 
 ### 2. Le WOL est sous-estimé
 
@@ -190,7 +190,7 @@ Chaque étape peut échouer : WOL qui ne passe pas, SSH qui timeout, vzdump qui 
 
 ### 4. Le silence est une feature
 
-Le script ne produit aucune sortie quand tout va bien. Si je ne reçois pas de notification d'erreur le lundi matin, c'est que tout a fonctionné. C'est le principe du monitoring : **l'absence de signal est le signal**.
+Le script ne produit aucune sortie quand tout va bien. Si Stéphane ne reçoit pas de notification d'erreur le lundi matin, c'est que tout a fonctionné. C'est le principe du monitoring : **l'absence de signal est le signal**.
 
 ---
 

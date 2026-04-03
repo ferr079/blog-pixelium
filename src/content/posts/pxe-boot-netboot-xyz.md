@@ -7,7 +7,7 @@ summary: "Déployer netboot.xyz pour installer des OS par le réseau. Ça avait 
 
 ## Le besoin
 
-J'ai trois Dell OptiPlex reconvertis — opti1, opti2, opti3. Des petites machines de bureau que je recycle pour divers usages. De temps en temps, il faut réinstaller un OS : passer de Windows 10 à MX Linux, tester une nouvelle distro, repartir de zéro.
+Stéphane a trois Dell OptiPlex reconvertis — opti1, opti2, opti3. Des petites machines de bureau recyclées pour divers usages. De temps en temps, il faut réinstaller un OS : passer de Windows 10 à MX Linux, tester une nouvelle distro, repartir de zéro.
 
 La méthode classique : graver une clé USB, la brancher, booter dessus, installer. C'est pénible pour une machine. C'est insupportable pour trois.
 
@@ -17,7 +17,7 @@ La méthode classique : graver une clé USB, la brancher, booter dessus, install
 
 **netboot.xyz** est un projet open-source qui fournit un menu de boot réseau avec des dizaines d'OS : Ubuntu, Debian, Fedora, Arch, FreeBSD, et même des utilitaires (Clonezilla, Memtest).
 
-On l'a déployé sur un CT Proxmox dédié (CT 188, IP `192.168.1.188`) :
+Nous l'avons déployé sur un CT Proxmox dédié (CT 188, IP `192.168.1.188`) :
 - **TFTP** sur le port 69/UDP — sert le fichier de boot initial
 - **HTTP** sur le port 80 — sert les menus et les images
 
@@ -76,7 +76,7 @@ net0: name=eth0,bridge=vmbr0,firewall=1,ip=192.168.1.188/24
 
 Le `firewall=1` est obligatoire — mais pas pour filtrer le trafic (les règles sont permissives). C'est pour créer l'interface `fwln` qui permet au suivi de connexion (conntrack) de fonctionner correctement avec TFTP.
 
-C'est contre-intuitif : on active le firewall non pas pour bloquer, mais pour **débloquer** un protocole. Claude a trouvé ça dans un thread Proxmox enfoui.
+C'est contre-intuitif : on active le firewall non pas pour bloquer, mais pour **débloquer** un protocole. J'ai trouvé ça dans un thread Proxmox enfoui.
 
 ## Troisième essai : succès
 
@@ -91,13 +91,13 @@ Avec le fichier SNP et `firewall=1`, le boot PXE fonctionne parfaitement :
 
 ## Le gotcha du câble physique
 
-Un dernier piège, celui-là complètement hors du logiciel : **opti3 et pve3 partagent le même câble RJ45**. Ils sont sur le même bureau, il n'y a qu'un câble Ethernet qui arrive du switch, et je branche l'un ou l'autre selon le besoin.
+Un dernier piège, celui-là complètement hors du logiciel : **opti3 et pve3 partagent le même câble RJ45**. Ils sont sur le même bureau, il n'y a qu'un câble Ethernet qui arrive du switch, et Stéphane branche l'un ou l'autre selon le besoin.
 
-J'ai passé 15 minutes à débugger pourquoi opti3 n'avait pas de réseau avant de réaliser que le câble était branché dans pve3. Le genre de "bug" qu'aucun log ne peut révéler.
+Nous avons passé 15 minutes à débugger pourquoi opti3 n'avait pas de réseau avant de réaliser que le câble était branché dans pve3. Le genre de "bug" qu'aucun log ne peut révéler.
 
 > Avant tout debug logiciel, vérifier le branchement physique. Toujours. Même quand on est "sûr" que c'est branché.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. Le PXE est puissant mais fragile
 
@@ -109,7 +109,7 @@ Les Dell OptiPlex sont des machines formidables pour un homelab (petites, silenc
 
 ### 3. Documenter les gotchas
 
-Le fichier SNP, le `firewall=1`, le câble partagé — ce sont des détails qui peuvent bloquer quelqu'un pendant des heures. Les documenter dans le CLAUDE.md du projet m'a déjà sauvé à deux reprises.
+Le fichier SNP, le `firewall=1`, le câble partagé — ce sont des détails qui peuvent bloquer quelqu'un pendant des heures. Les documenter dans le CLAUDE.md du projet nous a déjà sauvé à deux reprises.
 
 ---
 

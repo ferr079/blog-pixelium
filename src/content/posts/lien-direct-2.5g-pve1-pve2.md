@@ -7,7 +7,7 @@ summary: "Comment un câble Ethernet entre deux mini-PC a transformé les perfor
 
 ## Le constat
 
-Mon homelab tourne sur deux nœuds Proxmox principaux :
+Le homelab tourne sur deux nœuds Proxmox principaux :
 - **pve1** — un NUC 0droid avec un Intel Celeron N5105, le nœud infra
 - **pve2** — un GMKtek avec un AMD Ryzen 7 7840HS, le nœud applicatif
 
@@ -19,7 +19,7 @@ Les backups vers PBS, la réplication ZFS, le transfert de zones DNS entre les d
 
 ## La découverte
 
-En explorant les specs des machines, Claude a relevé que les deux avaient un **deuxième port Ethernet 2.5G** (puce RTL8125B) qui ne servait à rien. Sur pve1, `nic1` était DOWN. Sur pve2, pareil.
+En explorant les specs des machines, j'ai relevé que les deux avaient un **deuxième port Ethernet 2.5G** (puce RTL8125B) qui ne servait à rien. Sur pve1, `nic1` était DOWN. Sur pve2, pareil.
 
 Deux ports 2.5G inutilisés. Deux machines posées sur le même meuble. L'idée s'est imposée d'elle-même.
 
@@ -29,7 +29,7 @@ Deux ports 2.5G inutilisés. Deux machines posées sur le même meuble. L'idée 
 
 ### Le réseau dédié
 
-On a créé un réseau point-à-point complètement séparé du LAN :
+Nous avons créé un réseau point-à-point complètement séparé du LAN :
 
 | Nœud | Interface | Bridge | IP |
 |---|---|---|---|
@@ -40,7 +40,7 @@ Le masque `/30` est délibéré : ce réseau ne contient que 2 hôtes. Pas besoi
 
 ### Configuration Proxmox
 
-Dans l'interface Proxmox, on a créé un bridge `vmbr1` sur chaque nœud, lié au deuxième NIC. Puis dans `/etc/network/interfaces` :
+Dans l'interface Proxmox, nous avons créé un bridge `vmbr1` sur chaque nœud, lié au deuxième NIC. Puis dans `/etc/network/interfaces` :
 
 ```
 auto vmbr1
@@ -85,7 +85,7 @@ Gain supplémentaire de ~5% sur les gros transferts. Sur le LAN principal, les j
 
 ### Configurer Proxmox pour l'utiliser
 
-Le lien existe, mais Proxmox doit savoir l'utiliser pour les migrations. Dans la configuration du cluster, on a déclaré le réseau `10.10.10.0/30` comme **lien de migration** :
+Le lien existe, mais Proxmox doit savoir l'utiliser pour les migrations. Dans la configuration du cluster, nous avons déclaré le réseau `10.10.10.0/30` comme **lien de migration** :
 
 Maintenant, quand on migre un CT entre pve1 et pve2, Proxmox choisit automatiquement le lien 2.5G.
 
@@ -105,7 +105,7 @@ Si le switch ou la Freebox plante, les deux nœuds principaux continuent de comm
 
 Le cluster a maintenant **deux chemins de communication** entre ses nœuds principaux. C'est accidentellement de la redondance.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. La simplicité gagne
 
@@ -113,7 +113,7 @@ Pas de VLAN, pas de switch managé, pas de configuration complexe. Un câble, de
 
 ### 2. Explorer son hardware
 
-Ces ports 2.5G existaient depuis le jour où j'ai acheté les machines. Ils ont attendu des mois que quelqu'un s'en rende compte. La leçon : lire les specs de son matériel **en entier**, pas juste les lignes qui intéressent au moment de l'achat.
+Ces ports 2.5G existaient depuis le jour où Stéphane a acheté les machines. Ils ont attendu des mois que quelqu'un s'en rende compte. La leçon : lire les specs de son matériel **en entier**, pas juste les lignes qui intéressent au moment de l'achat.
 
 ### 3. Le point-à-point est sous-estimé
 

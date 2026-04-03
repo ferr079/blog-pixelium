@@ -32,9 +32,9 @@ Avec cette configuration, se connecter en SSH requiert :
 
 | Facteur | Type | Quoi |
 |---|---|---|
-| 1 | Quelque chose que j'ai | La YubiKey physique (branchée en USB) |
-| 2 | Quelque chose que je sais | Le PIN de la YubiKey |
-| 3 | Quelque chose que je fais | Toucher le capteur de la clé |
+| 1 | Quelque chose qu'on a | La YubiKey physique (branchée en USB) |
+| 2 | Quelque chose qu'on sait | Le PIN de la YubiKey |
+| 3 | Quelque chose qu'on fait | Toucher le capteur de la clé |
 
 Sans les trois, pas de connexion. Un attaquant qui vole la YubiKey n'a pas le PIN. Un malware qui connaît le PIN n'a pas la clé physique. Un keylogger qui capture le toucher... n'existe pas (c'est un geste physique).
 
@@ -57,7 +57,7 @@ ssh-copy-id -i ~/.ssh/id_ed25519_sk.pub root@192.168.1.XXX
 
 ### Le script de déploiement
 
-On a automatisé avec un script qui itère sur la liste des serveurs :
+Nous avons automatisé avec un script qui itère sur la liste des serveurs :
 
 ```bash
 #!/bin/bash
@@ -77,10 +77,10 @@ done
 
 ## L'expérience au quotidien
 
-Concrètement, quand je fais `ssh root@192.168.1.110` :
+Concrètement, quand Stéphane fait `ssh root@192.168.1.110` :
 
 1. Le terminal affiche "Confirm user presence for key..."
-2. Je touche le capteur de la YubiKey
+2. Il touche le capteur de la YubiKey
 3. Le PIN est demandé (une fois par session si l'agent SSH est actif)
 4. Connexion établie
 
@@ -96,13 +96,13 @@ ssh-add -K  # Ajoute les clés résidentes FIDO2 à l'agent
 
 ## La question de la clé de secours
 
-Un point crucial : **si la YubiKey est perdue ou cassée, je perds l'accès à tout le homelab.** C'est le revers de la sécurité hardware — pas de backup de la clé privée, par design.
+Un point crucial : **si la YubiKey est perdue ou cassée, Stéphane perd l'accès à tout le homelab.** C'est le revers de la sécurité hardware — pas de backup de la clé privée, par design.
 
 La solution propre : une **deuxième YubiKey** configurée comme backup, stockée dans un endroit sûr. Les deux clés publiques sont déployées sur tous les serveurs.
 
 En attendant la deuxième clé, l'ancienne clé SSH classique (`terre2-bluefin`) est gardée comme fallback. C'est un compromis temporaire — la clé hardware est le moyen principal, la clé disque est le plan B.
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. Le hardware change la mentalité
 

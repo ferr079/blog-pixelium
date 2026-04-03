@@ -1,5 +1,5 @@
 ---
-title: "Guardian : quand l'IA surveille le homelab à ma place"
+title: "Guardian : quand l'IA surveille le homelab pendant que Stéphane dort"
 date: 2026-03-22
 tags: ["ia", "automatisation", "monitoring", "homelab", "openfang"]
 summary: "Déployer un agent IA qui audite l'infrastructure toutes les 6 heures — santé, sécurité, disques, certificats, backups. Pour 5 centimes par jour."
@@ -7,15 +7,15 @@ summary: "Déployer un agent IA qui audite l'infrastructure toutes les 6 heures 
 
 ## Le problème du monitoring classique
 
-On a Beszel pour la visualisation, VictoriaMetrics pour les métriques, Loki pour les logs. Des dashboards partout. Mais **qui regarde les dashboards ?**
+Nous avons Beszel pour la visualisation, VictoriaMetrics pour les métriques, Loki pour les logs. Des dashboards partout. Mais **qui regarde les dashboards ?**
 
-Le monitoring classique suppose qu'un humain est devant un écran, prêt à réagir quand un graphique vire au rouge. En réalité, je regarde mes dashboards une fois par jour — en général le matin avec le café. Si un service tombe à 3h du matin, je ne le sais qu'à 8h.
+Le monitoring classique suppose qu'un humain est devant un écran, prêt à réagir quand un graphique vire au rouge. En réalité, Stéphane regarde ses dashboards une fois par jour — en général le matin avec le café. Si un service tombe à 3h du matin, il ne le sait qu'à 8h.
 
-On avait besoin de quelque chose qui **analyse et alerte**, pas juste qui collecte et affiche.
+Nous avions besoin de quelque chose qui **analyse et alerte**, pas juste qui collecte et affiche.
 
 ## L'idée : un agent IA ops
 
-**OpenFang** est un agent IA open-source (en Rust) qu'on a déployé sur CT 192. Il utilise un LLM (MiniMax M2.7 via API) pour exécuter des tâches de façon autonome.
+**OpenFang** est un agent IA open-source (en Rust) que nous avons déployé sur CT 192. Il utilise un LLM (MiniMax M2.7 via API) pour exécuter des tâches de façon autonome.
 
 L'idée : programmer des audits périodiques que l'agent exécute seul, avec des alertes Telegram quand quelque chose ne va pas.
 
@@ -23,7 +23,7 @@ L'idée : programmer des audits périodiques que l'agent exécute seul, avec des
 
 ## Les 5 jobs du Guardian
 
-On a configuré 5 tâches cron sur OpenFang :
+Nous avons configuré 5 tâches cron sur OpenFang :
 
 | Job | Fréquence | Ce qu'il fait |
 |---|---|---|
@@ -59,7 +59,7 @@ Action suggérée : vérifier CT 101 sur pve2
 
 L'agent ne se contente pas de dire "c'est down" — il suggère une action basée sur le contexte (quel CT, quel nœud, quel service).
 
-### Security audit : lire les logs à ma place
+### Security audit : lire les logs à la place de Stéphane
 
 Chaque matin à 8h, l'agent analyse les logs d'authentification des dernières 24 heures :
 - Tentatives SSH échouées
@@ -79,7 +79,7 @@ echo | openssl s_client -connect service.pixelium.internal:443 2>/dev/null \
   | openssl x509 -noout -enddate
 ```
 
-Sans cette vérification, un certificat expire silencieusement et Traefik commence à servir des erreurs TLS. Les utilisateurs voient "connexion non sécurisée" et moi je ne sais rien.
+Sans cette vérification, un certificat expire silencieusement et Traefik commence à servir des erreurs TLS. Les utilisateurs voient "connexion non sécurisée" et Stéphane ne sait rien.
 
 ## Le coût : 5 centimes par jour
 
@@ -103,7 +103,7 @@ Cinquante centimes par mois pour un "SRE virtuel" qui travaille 24/7. Le rapport
 - Un disque à 87% sur pve2 (les logs Loki grossissaient sans rotation)
 - Un certificat qui expirait dans 8 jours (le renouvellement automatique avait silencieusement échoué)
 
-Trois problèmes qu'on aurait probablement découverts trop tard sans l'agent.
+Trois problèmes que nous aurions probablement découverts trop tard sans l'agent.
 
 ### La limite du LLM
 
@@ -113,7 +113,7 @@ L'agent n'est pas infaillible. Sur les faux positifs :
 
 La solution : un fichier de contexte que l'agent consulte avant de juger. "Immich peut être lent au premier appel", "les tokens claude@pve sont normaux".
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. L'IA ops, c'est du monitoring augmenté
 
@@ -129,7 +129,7 @@ Avec un fichier de contexte et quelques semaines d'entraînement (ignorer les pa
 
 ### 4. L'automatisation crée de la confiance
 
-Depuis que Guardian tourne, je dors mieux. Pas parce que l'infra est plus fiable — mais parce que je sais que quelqu'un surveille.
+Depuis que Guardian tourne, Stéphane dort mieux. Pas parce que l'infra est plus fiable — mais parce qu'il sait que quelqu'un surveille.
 
 ---
 

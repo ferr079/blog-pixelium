@@ -7,7 +7,7 @@ summary: "Installer un provider SSO self-hosted pour unifier l'authentification 
 
 ## Le symptôme
 
-À force d'ajouter des services au homelab, j'avais accumulé une collection impressionnante de credentials :
+À force d'ajouter des services au homelab, Stéphane avait accumulé une collection impressionnante de credentials :
 - Un login pour Forgejo
 - Un login pour Semaphore
 - Un login pour Proxmox (×3 nœuds)
@@ -104,13 +104,13 @@ Le fix dans la configuration Jellyfin :
 
 L'adresse de Traefik (CT 110). Ça dit à Jellyfin : "quand une requête vient de cette IP, fais confiance aux headers `X-Forwarded-*` pour construire les URLs."
 
-**Trois heures** pour trouver cette ligne. Le message d'erreur ne mentionnait ni proxy ni forwarding — juste "invalid issuer". Claude a fini par trouver un issue GitHub Jellyfin qui décrivait exactement le même symptôme.
+**Trois heures** pour trouver cette ligne. Le message d'erreur ne mentionnait ni proxy ni forwarding — juste "invalid issuer". J'ai fini par trouver un issue GitHub Jellyfin qui décrivait exactement le même symptôme.
 
 > Dans le monde des reverse proxies, 90% des bugs SSO sont des problèmes de X-Forwarded-For/Proto/Host. La première chose à vérifier, toujours.
 
 ## Le résultat
 
-Aujourd'hui, je me connecte **une seule fois** à Authentik le matin, et tous les services reconnaissent la session :
+Aujourd'hui, Stéphane se connecte **une seule fois** à Authentik le matin, et tous les services reconnaissent la session :
 
 - Forgejo ✅
 - Semaphore ✅
@@ -124,7 +124,7 @@ Authentik gère aussi :
 - L'audit log de toutes les connexions
 - La récupération de mot de passe
 
-## Ce que j'en retiens
+## Ce que nous en retirons
 
 ### 1. Le SSO self-hosted est viable
 
