@@ -154,3 +154,7 @@ Ces quatre commandes sont devenues un réflexe hebdomadaire.
 ---
 
 *Stack : CrowdSec + bouncer iptables sur CT 110 (Traefik), 46 scénarios, CAPI communautaire. Découverte LAPI par PentAGI CT 198.*
+
+---
+
+**Mise à jour (avril 2026)** : La LAPI a été intentionnellement réouverte sur `0.0.0.0:8081` pour permettre à CT 112 (Homepage) d'afficher les métriques CrowdSec en widget. Le contexte a changé : ce n'est plus une erreur de configuration mais un choix délibéré dans un réseau privé (LAN uniquement, pas d'exposition internet). La surface d'attaque reste contrôlée — seuls les CTs du même réseau peuvent interroger la LAPI.

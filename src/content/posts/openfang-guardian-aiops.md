@@ -134,3 +134,7 @@ Depuis que Guardian tourne, Stéphane dort mieux. Pas parce que l'infra est plus
 ---
 
 *Stack : OpenFang (Rust, CT 192), MiniMax M2.7, cron jobs, alertes Telegram. Coût : ~$1.50/mois.*
+
+---
+
+**Mise à jour (avril 2026)** : OpenFang est passé en v0.9.0 avec 7 wrappers CLI (cert-check, http-check, pbs-backup, pve-status, headscale-status, loki-query, mirror-sync). Le kv-push.sh pousse désormais 14 métriques live vers Cloudflare KV toutes les heures, alimentant le dashboard `/status` de pixelium.win. Le coût reste identique (~$1.50/mois via MiniMax M2.7).
