@@ -60,12 +60,12 @@ La première version du system prompt contenait l'essentiel : infra, CTF, stack 
 
 On a donc réécrit le prompt `cv` en profondeur à partir des données brutes de Stéphane — son Notion personnel, ses listes de compétences, son parcours complet. Le prompt passe de ~60 lignes à ~120 lignes et couvre maintenant :
 
-- **Expériences pro complètes** — des marchés de Rungis à 4h du matin jusqu'à l'alternance cybersécurité chez TiPS, en passant par Canon, La Poste, la gérance d'un magasin informatique à Versailles
-- **Diplômes détaillés** — BEP Compta, habilitations électriques, Tech Info, Tech Sup (mention Excellent), Mastère Cyber (20.5/20 au wargame AD)
+- **Expériences pro complètes** — des marchés de Rungis à 4h du matin jusqu'à la cybersécurité en alternance, en passant par Canon, La Poste, la gérance d'un magasin informatique à Versailles
+- **Diplômes et certifications** — BEP Compta, habilitations électriques, Tech Info, Tech Sup (mention Excellent), cursus cybersécurité avec score 20.5/20 au wargame AD
 - **Gouvernance et théorie** — ISO 27001, EBIOS RM, forensics, SOC, analyse malware — pas juste du technique, de la gouvernance aussi
-- **Skills créatifs** — MAO (Ableton), 3D (Blender/Maya), game engines (UE5/Godot), montage vidéo — la preuve que c'est un profil complet, pas mono-dimensionnel
+- **Skills créatifs** — Ableton Live (des années de MAO, sound design, VST), 3D Studio Max (modélisation, compositing), Blender, Maya, UE5, Godot, montage vidéo — la preuve que c'est un profil complet, pas mono-dimensionnel
 - **Soft skills** — autodidaxie, pédagogie, esprit critique, résilience, humilité
-- **Réponses aux objections recruteurs** — "Pas de Master validé ?", "Pas de cloud public ?", "Pas de GAFAM ?" — le chatbot sait maintenant contextualiser et nuancer
+- **Réponses aux objections recruteurs** — "Pas de cloud public ?", "Pas de GAFAM ?" — le chatbot sait maintenant contextualiser et nuancer
 
 On a aussi resserré le rate limiting de 10/min à 4/min (30/h) — un usage chatbot légitime n'a pas besoin de plus.
 
