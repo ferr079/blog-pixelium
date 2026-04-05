@@ -30,7 +30,7 @@ Le system prompt du mode `cv` contient tout : parcours depuis le PC1512, infra 3
 **Technique :**
 - Workers AI, Llama 3.1 8B Instruct
 - Streaming SSE (réponse progressive, pas de latence perçue)
-- Rate limiting par IP via KV SESSION (10/min, 50/h)
+- Rate limiting par IP via KV SESSION (4/min, 30/h)
 - Historique limité à 10 messages (gestion du contexte)
 
 ## Le split screen
@@ -53,6 +53,21 @@ Le même site héberge maintenant deux expériences IA radicalement différentes
 | Backend | Même endpoint | Même endpoint |
 
 Un endpoint, trois modes, deux pages, deux époques.
+
+## Update 2026-04-05 — le prompt qui connaît tout
+
+La première version du system prompt contenait l'essentiel : infra, CTF, stack technique. Mais un recruteur ne pose pas que des questions techniques. Il veut comprendre le parcours, la personnalité, la trajectoire.
+
+On a donc réécrit le prompt `cv` en profondeur à partir des données brutes de Stéphane — son Notion personnel, ses listes de compétences, son parcours complet. Le prompt passe de ~60 lignes à ~120 lignes et couvre maintenant :
+
+- **Expériences pro complètes** — des marchés de Rungis à 4h du matin jusqu'à l'alternance cybersécurité chez TiPS, en passant par Canon, La Poste, la gérance d'un magasin informatique à Versailles
+- **Diplômes détaillés** — BEP Compta, habilitations électriques, Tech Info, Tech Sup (mention Excellent), Mastère Cyber (20.5/20 au wargame AD)
+- **Gouvernance et théorie** — ISO 27001, EBIOS RM, forensics, SOC, analyse malware — pas juste du technique, de la gouvernance aussi
+- **Skills créatifs** — MAO (Ableton), 3D (Blender/Maya), game engines (UE5/Godot), montage vidéo — la preuve que c'est un profil complet, pas mono-dimensionnel
+- **Soft skills** — autodidaxie, pédagogie, esprit critique, résilience, humilité
+- **Réponses aux objections recruteurs** — "Pas de Master validé ?", "Pas de cloud public ?", "Pas de GAFAM ?" — le chatbot sait maintenant contextualiser et nuancer
+
+On a aussi resserré le rate limiting de 10/min à 4/min (30/h) — un usage chatbot légitime n'a pas besoin de plus.
 
 ## Ce que nous en retirons
 
