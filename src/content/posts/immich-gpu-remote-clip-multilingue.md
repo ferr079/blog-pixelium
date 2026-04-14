@@ -2,14 +2,14 @@
 title: "Immich : déporter le ML sur un GPU distant via Podman CUDA"
 date: 2026-04-14
 tags: ["immich", "gpu", "cuda", "clip", "ocr", "homelab", "podman"]
-summary: "10 000 images (memes, infographies, captures) indexées en quelques minutes au lieu de plusieurs heures, grâce à une RTX 3090 distante et un modèle CLIP multilingue de 4 Go."
+summary: "10 000 images (memes, mindmaps, infographies, captures) indexées en quelques minutes au lieu de plusieurs heures, grâce à une RTX 3090 distante et un modèle CLIP multilingue de 4 Go."
 ---
 
 ## Le déclencheur
 
-Stéphane a 10 000 images dans Immich. Mais ce ne sont pas des photos de vacances ou des portraits de famille. Ce sont des **memes, des infographies, des captures d'écran** — le genre de contenu que le modèle CLIP par défaut d'Immich ne sait pas indexer correctement.
+Stéphane a 10 000 images dans Immich. Mais ce ne sont pas des photos de vacances ou des portraits de famille. Ce sont des **memes, des infographies, des mindmaps, des captures d'écran** — le genre de contenu que le modèle CLIP par défaut d'Immich ne sait pas indexer correctement.
 
-Le modèle par défaut, `ViT-B-32__openai`, est le plus petit de la gamme : ~583 Mo, anglais uniquement, entraîné sur des photos "classiques". Taper "graphique des dépenses" ou "meme chat" dans la recherche Immich ne renvoyait rien de pertinent. Le modèle ne comprend ni le français, ni les compositions visuelles complexes des infographies.
+Le modèle par défaut, `ViT-B-32__openai`, est le plus petit de la gamme : ~583 Mo, anglais uniquement, entraîné sur des photos "classiques". Taper "graphique des dépenses", "carte mentale projet" ou "meme chat" dans la recherche Immich ne renvoyait rien de pertinent. Le modèle ne comprend ni le français, ni les compositions visuelles complexes des infographies et mindmaps.
 
 Et ré-indexer 10 000 images sur le CPU d'un conteneur LXC, ça prendrait des heures. Voire des jours.
 
@@ -201,6 +201,8 @@ Pour une tâche ponctuelle comme l'indexation (quelques minutes), c'est néglige
 Avant : la recherche Immich était inutilisable pour du contenu non-photographique. On scrollait manuellement dans 10 000 images.
 
 Après : on tape "infographie cybersécurité" ou "meme compilation" et les résultats sont pertinents. En français comme en anglais.
+
+> **Le use case qui justifie tout : les mindmaps.** Une carte mentale, c'est un concentré de connaissances — du texte dans des branches, une structure spatiale, des couleurs, une hiérarchie visuelle. C'est aussi le contenu le plus impossible à retrouver dans une collection d'images. On sait qu'on avait fait une mindmap sur l'architecture réseau ou la roadmap Q3, mais laquelle parmi des centaines ? Avec CLIP, le modèle comprend la composition visuelle ("carte mentale avec des branches"). Avec l'OCR, il indexe le texte dans chaque branche ("microservices", "Kubernetes", "deadline mars"). Les deux combinés rendent cherchable ce qui était auparavant condamné à l'oubli.
 
 Le setup est volontairement éphémère. Quand terre2 est éteinte (ce qui arrive — ce n'est pas un serveur 24/7), Immich retombe sur son ML local en CPU. Les embeddings déjà calculés restent valides. Seules les nouvelles images seraient traitées lentement. Mais pour une collection qui grossit par à-coups (pas 500 photos par jour), c'est un compromis acceptable.
 
