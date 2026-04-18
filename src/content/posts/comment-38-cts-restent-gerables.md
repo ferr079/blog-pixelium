@@ -5,6 +5,8 @@ tags: ["homelab", "organisation", "documentation", "automatisation", "ia"]
 summary: "3 nœuds Proxmox, 38 CTs, 37 services, 133 repos miroirs — et un seul opérateur. Retour sur les principes qui empêchent l'ensemble de devenir ingérable."
 ---
 
+> **Mise à jour (18 avril 2026)** — L'architecture agents a été restructurée : **Hermes** (CT 190) est désormais le correspondant Telegram h24 avec 4 crons (doc-sync, site-metrics, audit sécu, veille RSS). **OpenFang** passe en mode headless (7 crons Guardian, pas de Telegram). Communication inter-agents via bus **MQTT** (Mosquitto CT 142). Backups PBS passés de hebdomadaires à quotidiens.
+
 ## Le problème que personne ne voit venir
 
 Un homelab commence avec un conteneur. Puis deux. Puis un reverse proxy. Puis un DNS. Puis un NAS. Puis un VPN. Puis un SIEM. Puis un agent IA. Et un matin, on se réveille avec 38 conteneurs sur 3 nœuds Proxmox et on se demande : *comment j'en suis arrivé là, et pourquoi ça tient encore debout ?*

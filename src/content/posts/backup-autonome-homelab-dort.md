@@ -5,6 +5,8 @@ tags: ["automatisation", "proxmox", "backup", "homelab"]
 summary: "9 étapes automatisées — du Wake-on-LAN d'un serveur éteint jusqu'à son extinction après backup de 33 conteneurs. Le tout sans intervention humaine."
 ---
 
+> **Mise à jour (18 avril 2026)** — Le backup PBS est passé de **hebdomadaire** (lundi 00h08) à **quotidien** (chaque nuit 00h08). Rétention ajustée : `keep-daily=7, keep-weekly=4, keep-last=1`. Perte maximale réduite de 7 jours à 24 heures. Motivation : une suppression accidentelle de données a prouvé qu'une semaine sans backup est un trou inacceptable.
+
 ## Le problème
 
 33 conteneurs LXC répartis sur deux nœuds Proxmox. Des services critiques — DNS, reverse proxy, Forgejo, Vaultwarden — et des services de confort — Jellyfin, Kavita, FreshRSS. Tous ont besoin d'être sauvegardés.
