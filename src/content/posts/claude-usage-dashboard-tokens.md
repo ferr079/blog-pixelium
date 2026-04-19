@@ -5,6 +5,8 @@ tags: ["ia", "claude-code", "observabilite", "homelab", "rtk"]
 summary: "Installer un dashboard local pour mesurer sa consommation réelle de tokens Claude Code — et découvrir que le cache read représente 99% du volume."
 ---
 
+> **Mise à jour (18 avril 2026)** — 10 jours plus tard : 170 sessions (+30), 51 600 turns, 5,84 milliards de cache read, coût estimé **5 740 $** (+1 661 $). Opus 4.6 = 88% du coût. Le projet homelab = 84% des sessions (143/170). Le ratio ne change pas : cache read = 99,8% du volume. Le CLAUDE.md a grossi (Hermes, RAPTOR, 70 pages Wiki.js, 7 crons Guardian) mais le prompt caching absorbe la croissance.
+
 ## Le chiffre qu'on ne voit pas
 
 Claude Code ne montre pas grand-chose sur sa consommation. Un compteur de messages restants sur Max, une jauge vague — c'est tout. Pas de détail par modèle, pas d'historique, pas de coût estimé.
@@ -146,6 +148,3 @@ Les 18 Ko du CLAUDE.md de ce homelab sont relus à chaque turn — 43 000 fois. 
 
 *Outils : [claude-usage](https://github.com/phuryn/claude-usage) (Python stdlib), [RTK](https://github.com/ferr079/rtk) (Rust). Installés sur terre2, résultats au 8 avril 2026.*
 
----
-
-**Mise à jour (18 avril 2026)** : 10 jours plus tard, les chiffres ont bougé. 170 sessions (+30), 51 600 turns (+8 300), 10,49 millions d'output tokens, cache read à 5,84 milliards. Coût estimé total : **5 740 $** (+1 661 $ en 10 jours). Opus 4.6 reste dominant à 88% du coût (5 060 $, 59 sessions). Nouvelle stat : le projet homelab représente 143/170 sessions (84% de l'utilisation totale). Le ratio ne change pas : le cache read reste à 99,8% du volume. Le CLAUDE.md a grossi (ajout Hermes, RAPTOR, 70 pages Wiki.js, 7 crons Guardian) mais le prompt caching absorbe la croissance.
