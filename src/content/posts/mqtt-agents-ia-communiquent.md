@@ -41,7 +41,7 @@ La première décision a été de clarifier les rôles. Avant, OpenFang faisait 
 | **OpenFang** | Moteur infra headless, Guardian crons | Push-only (envoie les alertes) |
 | **Claude Code** | Sessions interactives | Via MQTT pendant les sessions |
 
-Le bot Telegram @PC1512Bot a été transféré d'OpenFang à Hermes. Un seul process peut poller un bot à la fois — Hermes a pris le relais, OpenFang a perdu sa section `[channels.telegram]`. Les scripts Guardian continuent d'envoyer leurs alertes via `curl sendMessage` avec le même token — du push pur, pas de conflit.
+Le bot Telegram a été transféré d'OpenFang à Hermes. Un seul process peut poller un bot à la fois — Hermes a pris le relais, OpenFang a perdu sa section `[channels.telegram]`. Les scripts Guardian continuent d'envoyer leurs alertes via `curl sendMessage` avec le même token — du push pur, pas de conflit.
 
 Les deux crons agents (veille-rss et audit-sécurité) ont migré d'OpenFang vers Hermes, qui les exécute nativement via `hermes cron create --deliver telegram`.
 
