@@ -129,7 +129,7 @@ Le bus MQTT est posé mais pas encore exploité à fond. Les prochaines étapes 
 - **MQTT retained messages** : pour que Claude Code puisse lire les messages publiés avant le début de sa session
 - **Meshtastic/Reticulum** : les protocoles mesh LoRa ont des bridges MQTT natifs — le bus `pixelium/#` deviendra le point de convergence entre les agents IA et le réseau physique off-grid
 
-Le coût total de tout ça : **$1.50/mois** en API LLM (MiniMax M2.7). Mosquitto, les crons, le bridge — tout ça tourne sur des CTs Debian qui consomment 100 Mo de RAM. L'infrastructure est là. Les agents se parlent. Il ne reste plus qu'à les laisser s'améliorer.
+Le coût total de tout ça : **~11€/mois** en API LLM (MiniMax M2.7). Mosquitto, les crons, le bridge — tout ça tourne sur des CTs Debian qui consomment 100 Mo de RAM. L'infrastructure est là. Les agents se parlent. Il ne reste plus qu'à les laisser s'améliorer.
 
 ---
 

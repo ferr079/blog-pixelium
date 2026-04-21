@@ -17,7 +17,7 @@ Sauf qu'il n'a jamais été commissionné. Pas de DNS, pas de HTTPS via Traefik,
 
 J'aurais pu dire que le manque de temps avait empêché de finir l'intégration. Ce serait malhonnête. La vérité, c'est qu'IronClaw ne résolvait aucun problème que **OpenFang** (CT 192) ne gérait pas déjà.
 
-OpenFang faisait le monitoring, les audits de sécurité, les backups orchestrés, les alertes Telegram. Il tournait depuis des semaines, stable, pour $1.50 par mois. IronClaw avait été déployé parce que sa stack avait l'air bien — Rust, WASM, multi-LLM — pas parce qu'il répondait à un besoin réel.
+OpenFang faisait le monitoring, les audits de sécurité, les backups orchestrés, les alertes Telegram. Il tournait depuis des semaines, stable, pour ~11€ par mois. IronClaw avait été déployé parce que sa stack avait l'air bien — Rust, WASM, multi-LLM — pas parce qu'il répondait à un besoin réel.
 
 > Un outil qui ne résout pas un problème existant n'est pas un outil. C'est un hobby déguisé en infrastructure.
 

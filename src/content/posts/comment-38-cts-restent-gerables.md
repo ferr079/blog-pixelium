@@ -64,7 +64,7 @@ Le journal n'est pas de la documentation — c'est de la **mémoire opérationne
 
 Trois agents IA tournent en permanence sur l'infrastructure :
 
-**OpenFang** (CT 192) — le cœur AIOps. Un assistant infra sur Telegram qui vérifie avant d'affirmer, un agent de veille RSS qui produit un digest tech quotidien, et un auditeur de sécurité qui croise CrowdSec, Wazuh et les certificats TLS chaque matin. Le tout pour $1.50/mois.
+**OpenFang** (CT 192) — le cœur AIOps. Un assistant infra sur Telegram qui vérifie avant d'affirmer, un agent de veille RSS qui produit un digest tech quotidien, et un auditeur de sécurité qui croise CrowdSec, Wazuh et les certificats TLS chaque matin. Le tout pour ~11€/mois.
 
 **7 crons Guardian** surveillent l'infra sans intervention humaine : santé HTTP toutes les 6 heures, sécurité quotidienne, espace disque, certificats, backups hebdomadaires, synchronisation des miroirs. Si quelque chose ne va pas, Telegram sonne. Si tout va bien, silence.
 
@@ -138,4 +138,4 @@ Chaque service retiré libère de la RAM, du temps de maintenance et de l'attent
 
 ---
 
-*Stack : 3 nœuds Proxmox (pve1/pve2/pve3), 38 CTs + 1 VM, Forgejo, Wiki.js, Ansible/Semaphore, NetBox, OpenFang (MiniMax M2.7), Claude Code, PBS backup automatisé. Coût AIOps : ~$1.50/mois.*
+*Stack : 3 nœuds Proxmox (pve1/pve2/pve3), 38 CTs + 1 VM, Forgejo, Wiki.js, Ansible/Semaphore, NetBox, OpenFang (MiniMax M2.7), Claude Code, PBS backup automatisé. Coût AIOps : ~11€/mois.*

@@ -133,10 +133,10 @@ Depuis que Guardian tourne, Stéphane dort mieux. Pas parce que l'infra est plus
 
 ---
 
-*Stack : OpenFang (Rust, CT 192), Hermes (Python, CT 190), MiniMax M2.7, MQTT (Mosquitto, CT 142), alertes Telegram. Coût : ~$1.50/mois.*
+*Stack : OpenFang (Rust, CT 192), Hermes (Python, CT 190), MiniMax M2.7, MQTT (Mosquitto, CT 142), alertes Telegram. Coût : ~11€/mois.*
 
 ---
 
-**Mise à jour (18 avril 2026)** : Restructuration complète de l'architecture agents. **Hermes** (CT 190, NousResearch) est désormais le correspondant Telegram h24 — il a repris la veille-rss (16h) et l'audit-sécurité (11h) comme crons natifs, plus deux nouveaux : doc-sync (8h30, réconciliation Forgejo/Wiki.js/Proxmox) et site-metrics-audit (9h, détection écarts métriques du site). **OpenFang** passe en mode headless — plus de polling Telegram, il conserve les 7 crons système Guardian et l'agent infra-assistant en on-demand. Le **backup PBS passe de hebdomadaire à quotidien** (00h08 chaque nuit, rétention keep-daily=7, keep-weekly=4). Un **bus MQTT** (Mosquitto CT 142) connecte les agents : OpenFang publie les résultats Guardian, Hermes souscrit et forward sur Telegram. Le coût reste ~$1.50/mois.
+**Mise à jour (18 avril 2026)** : Restructuration complète de l'architecture agents. **Hermes** (CT 190, NousResearch) est désormais le correspondant Telegram h24 — il a repris la veille-rss (16h) et l'audit-sécurité (11h) comme crons natifs, plus deux nouveaux : doc-sync (8h30, réconciliation Forgejo/Wiki.js/Proxmox) et site-metrics-audit (9h, détection écarts métriques du site). **OpenFang** passe en mode headless — plus de polling Telegram, il conserve les 7 crons système Guardian et l'agent infra-assistant en on-demand. Le **backup PBS passe de hebdomadaire à quotidien** (00h08 chaque nuit, rétention keep-daily=7, keep-weekly=4). Un **bus MQTT** (Mosquitto CT 142) connecte les agents : OpenFang publie les résultats Guardian, Hermes souscrit et forward sur Telegram. Le coût reste ~11€/mois.
 
 **Mise à jour (17 avril 2026)** : Guardian a doublé de taille. OpenFang v0.5.9 tourne avec **3 agents** (infra-assistant, veille-rss, security-auditor) et **7 crons système**. Le http-check couvre 26 services. Bugs corrigés : guardian-certs et guardian-backup cassés 16 jours (PATH relatif), heartbeat timeout passé à 25h pour agents cron-only.
