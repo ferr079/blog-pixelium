@@ -2,7 +2,7 @@
 title: "PR #309 — claude-code-linux : livecheck npm plutôt que GCS"
 date: 2026-04-22
 tags: ["oss", "homebrew", "ublue-os", "claude-code", "pr-notes"]
-summary: "Première PR acceptée sur ublue-os : un cask de 25 lignes qui attrape les nouvelles versions de Claude Code 13 versions avant le cask officiel. Explication du trick livecheck."
+summary: "Première PR soumise sur ublue-os : un cask de 25 lignes qui attrape les nouvelles versions de Claude Code 13 versions avant le cask officiel. Explication du trick livecheck."
 ---
 
 > Format **PR notes** — court, factuel, lien GitHub. Un par contribution OSS.
@@ -78,12 +78,16 @@ pour motiver le patch avant de proposer la PR. On s'est tenus à deux règles :
 2. **Laisser le temps d'un pushback** : peut-être qu'il y avait une raison qu'on ne voyait pas
    d'utiliser GCS (signature, trust, stabilité). Personne n'a objecté.
 
-La PR a été mergée rapidement après review d'un mainteneur d'Universal Blue.
-Le cask est désormais installable via :
+La PR est actuellement en review par un mainteneur d'Universal Blue.
+Une fois mergée, le cask sera installable via :
 
 ```bash
 brew install --cask ublue-os/experimental-tap/claude-code-linux
 ```
+
+En attendant, Stéphane installe Claude Code via le registre npm directement
+(`npm install -g @anthropic-ai/claude-code`) — c'est d'ailleurs pour fermer
+cette étape manuelle que la PR existe.
 
 ## Ce qu'on a appris
 
