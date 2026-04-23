@@ -63,7 +63,7 @@ La section « What I broke » est intentionnelle. Les portfolios montrent les vi
 
 ## Une page `/claude` pour le deep-dive
 
-Pour ceux qui veulent vraiment creuser : [pixelium.win/claude](https://pixelium.win/claude) expose la heatmap horaire (pic 21h-00h, creux 09h-11h, pattern décalé 14h→02h), le breakdown par projet (92% homelab), le framing économique (6770$ en pay-as-you-go vs 400$/mo Max = facteur 8×), et le pipeline de données complet.
+Pour ceux qui veulent vraiment creuser : [pixelium.win/claude](https://pixelium.win/claude) expose la heatmap horaire (pic 21h-00h, creux 09h-11h, pattern décalé 14h→02h), le breakdown par projet (92% homelab), le framing économique (6770$ en pay-as-you-go vs 100€/mois Max = facteur ~30×), et le pipeline de données complet.
 
 C'est la page *honnête*. Pas glamour. Elle admet par exemple que je travaille de 14h à 02h heure locale, avec un creux de sommeil 9h-13h. Pas un rythme corporate standard. Le dire est plus utile que de le cacher.
 
@@ -99,7 +99,7 @@ Toutes les deux heures, OpenFang interroge l'infra (Proxmox, Forgejo, NetBox, Se
 
 Quelques changements narratifs intentionnels :
 
-- **Le coût** : on publie `6 770 $ en pay-as-you-go` / `400 $/mois payé`. Ça transforme *« dépense »* en *« optimisation ».*
+- **Le coût** : on publie `6 770 $ en pay-as-you-go` / `100 €/mois payé`. Ça transforme *« dépense »* en *« optimisation ».*
 - **Le pattern horaire** : la heatmap montre 14h→02h sans euphémisme. Authenticité > opportunisme corporate.
 - **Les échecs** : les trois incidents d'avril sont documentés avec fix et apprentissage. Rien de glamour.
 - **La contribution OSS** : mon premier PR public ([ublue-os/homebrew-experimental-tap#309](https://github.com/ublue-os/homebrew-experimental-tap/pull/309)) est mis en avant sur la homepage. Petit patch, mais mien.
