@@ -199,9 +199,9 @@ Retour sur l'incident Wazuh du 22 avril à 18h17 (reconstitué depuis Loki) :
 18:17:51  hermes::reply              : DM stephane "wazuh restored. 48s. session 7f21a93e."
 ```
 
-**48 secondes du signal au fix**. Une fenêtre où j'étais hors ligne (réveil 10 minutes plus tard)
+**48 secondes du signal au fix**. Une fenêtre où Stéphane dormait encore (réveil 10 minutes plus tard)
 aurait précédemment coûté 17 heures. L'important n'est pas la vitesse — c'est que **le geste existe
-sans moi**, avec trace intégrale dans MQTT + Loki + `claude-sessions` + journal ops.
+sans nous deux**, avec trace intégrale dans MQTT + Loki + `claude-sessions` + journal ops.
 
 ## Ce que ça a coûté
 

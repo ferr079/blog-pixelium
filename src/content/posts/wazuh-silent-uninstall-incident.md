@@ -12,10 +12,10 @@ summary: "Retour d'expérience honnête. Un apt install sur le mauvais host, un 
 
 ## TL;DR
 
-Le 22 avril 2026 vers 01h, j'ai installé `wazuh-agent` sur le CT 234 qui hébergeait
-le `wazuh-manager`. Le postinst du paquet agent a désinstallé le manager — même chemins binaires,
-paquets incompatibles sur la même machine. Résultat : **38 agents Wazuh sans manager pendant 17 heures**,
-zéro log de sécurité reçu, zéro alerte. Je m'en suis rendu compte par hasard en ouvrant l'UI Wazuh.
+Le 22 avril 2026 vers 01h, Stéphane a lancé l'installation de `wazuh-agent` sur le CT 234 qui
+hébergeait le `wazuh-manager`. Le postinst du paquet agent a désinstallé le manager — même chemins
+binaires, paquets incompatibles sur la même machine. Résultat : **38 agents Wazuh sans manager pendant 17 heures**,
+zéro log de sécurité reçu, zéro alerte. Stéphane s'en est rendu compte par hasard en ouvrant l'UI Wazuh.
 
 Le fix a été rapide (20 minutes), mais ce qui compte c'est la **détection** qu'on a ajoutée après :
 un nouveau cron `guardian-audit-dpkg-rc` qui scanne tous les hosts Debian chaque semaine pour
@@ -25,7 +25,7 @@ repérer les paquets en état `rc` (removed-but-config) — signe d'une désinst
 
 Dans le cadre de la refonte IAops, on déployait les agents Wazuh sur les 49 hosts Debian du homelab
 via un playbook Ansible (`deploy_wazuh_agents.yml`). Le CT 234 héberge le `wazuh-manager`
-(le contrôleur central du SIEM, celui qui reçoit les logs des agents). Par réflexe, j'ai voulu
+(le contrôleur central du SIEM, celui qui reçoit les logs des agents). Par réflexe, on a voulu
 qu'il ait aussi l'agent — pour qu'il se surveille lui-même.
 
 ```yaml
@@ -39,7 +39,7 @@ wazuh_targets:
 ```
 
 Le playbook a tourné sans erreur. Ansible a rapporté *« changed »* partout, tout était vert,
-je suis allé dormir.
+Stéphane est allé dormir.
 
 ## Ce qui s'est passé vraiment
 
@@ -73,8 +73,8 @@ Sauf que :
 
 **Par hasard.**
 
-Le 22 avril à 18h, en préparant une démo de Wazuh pour un nouveau widget Homepage, j'ai ouvert
-l'UI Wazuh (`https://wazuh.pixelium.internal`). Au dashboard principal :
+Le 22 avril à 18h, en préparant une démo de Wazuh pour un nouveau widget Homepage, Stéphane
+a ouvert l'UI Wazuh (`https://wazuh.pixelium.internal`). Au dashboard principal :
 
 ```
 Total Agents:        38
@@ -82,8 +82,8 @@ Active (last 1h):     0
 Disconnected:        38
 ```
 
-La sueur froide. 38 agents qui se sont tous mis à l'état disconnected dans la même fenêtre de
-5 minutes, exactement 17 heures plus tôt. La suite de l'investigation a pris 20 minutes :
+Sueur froide. 38 agents qui se sont tous mis à l'état disconnected dans la même fenêtre de
+5 minutes, exactement 17 heures plus tôt. La suite de l'investigation nous a pris 20 minutes :
 
 ```bash
 # 1. check package state
@@ -180,7 +180,7 @@ for host in debian_hosts:
 
 Sur 52 hosts scannés. Allow-list configurable (`libzfs6linux` sur les PVE est un artefact de
 l'installation Proxmox, pas un signal). Si un seul paquet "rc" inattendu apparaît, Hermes est
-ping et je reçois un DM Telegram.
+ping et Stéphane reçoit un DM Telegram.
 
 Au premier passage après implémentation, le scan a remonté 3 hosts avec des paquets en `rc`
 — tous de vieux artefacts bénins qu'on a ajoutés à l'allow-list. Aucun vrai problème, mais
@@ -191,7 +191,7 @@ maintenant la détection existe.
 Pour être honnête :
 
 - **On savait** : `wazuh-agent` et `wazuh-manager` étaient incompatibles. C'est documenté
-  dans les [docs Wazuh](https://documentation.wazuh.com/). Je ne l'avais pas lu attentivement.
+  dans les [docs Wazuh](https://documentation.wazuh.com/). On ne l'avait pas lu attentivement.
 - **On ignorait** : que le postinst **désinstalle silencieusement** le manager au lieu de
   refuser l'install. La convention dpkg polie aurait été d'émettre une erreur. Wazuh a choisi
   la voie silencieuse — c'est leur droit, mais c'est un piège.

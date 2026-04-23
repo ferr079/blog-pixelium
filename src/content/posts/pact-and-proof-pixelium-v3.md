@@ -65,7 +65,7 @@ La section « What I broke » est intentionnelle. Les portfolios montrent les vi
 
 Pour ceux qui veulent vraiment creuser : [pixelium.win/claude](https://pixelium.win/claude) expose la heatmap horaire (pic 21h-00h, creux 09h-11h, pattern décalé 14h→02h), le breakdown par projet (92% homelab), le framing économique (6770$ en pay-as-you-go vs 100€/mois Max = facteur ~30×), et le pipeline de données complet.
 
-C'est la page *honnête*. Pas glamour. Elle admet par exemple que je travaille de 14h à 02h heure locale, avec un creux de sommeil 9h-13h. Pas un rythme corporate standard. Le dire est plus utile que de le cacher.
+C'est la page *honnête*. Pas glamour. Elle admet par exemple que Stéphane travaille de 14h à 02h heure locale, avec un creux de sommeil 9h-13h. Pas un rythme corporate standard. Le dire est plus utile que de le cacher.
 
 ## Carte topologique interactive
 
