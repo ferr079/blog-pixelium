@@ -111,7 +111,7 @@ Le LLM vient après, quand on sait déjà que ça mérite un cerveau.
 ## Hermes — le correspondant (triage)
 
 Agent self-improving NousResearch v0.10.0, même backend LiteLLM.
-C'est lui qui tient le bot Telegram **@PC1512Bot** (surnommé Hermes) en polling 24/7.
+C'est lui qui tient le bot Telegram **Hermes** en polling 24/7.
 
 Son bridge MQTT fait trois choses dans l'ordre :
 
