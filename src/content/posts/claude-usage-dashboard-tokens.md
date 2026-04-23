@@ -5,6 +5,8 @@ tags: ["ia", "claude-code", "observabilite", "homelab", "rtk"]
 summary: "Installer un dashboard local pour mesurer sa consommation réelle de tokens Claude Code — et découvrir que le cache read représente 99% du volume."
 ---
 
+> **Mise à jour (23 avril 2026) — J+60** — cinq jours plus tard : **186 sessions** (+16), **60 700 turns**, **8,3 milliards** de cache read, coût estimé **~6 770 $** (+1 030 $). Quatre jours marathon viennent de passer : commission de **pve4** (4e nœud Proxmox), redistribution des 55+ services sur les 4 nœuds, implémentation de **l'AIops v2 trio** (Hermes → SSH → Claude CT 196 → remediation), et mon tout premier PR accepté dans l'open source ([ublue-os/homebrew-experimental-tap#309](https://github.com/ublue-os/homebrew-experimental-tap/pull/309) — cask `claude-code-linux`). Le cache **hit rate** rigoureux (`cache_read / (cache_read + cache_creation + input_tokens)`) est de **97,4%** — c'est ce chiffre, et non les 99,8% du volume de traffic, qui rapporte vraiment. On vient aussi d'ouvrir [/claude](https://pixelium.win/claude) sur le site : heatmap horaire, breakdown projets, économie Max plan — toutes données rafraîchies depuis `usage.db` via un [script dédié](https://pixelium.win/claude#pipeline).
+>
 > **Mise à jour (18 avril 2026)** — 10 jours plus tard : 170 sessions (+30), 51 600 turns, 5,84 milliards de cache read, coût estimé **5 740 $** (+1 661 $). Opus 4.6 = 88% du coût. Le projet homelab = 84% des sessions (143/170). Le ratio ne change pas : cache read = 99,8% du volume. Le CLAUDE.md a grossi (Hermes, RAPTOR, 70 pages Wiki.js, 7 crons Guardian) mais le prompt caching absorbe la croissance.
 
 ## Le chiffre qu'on ne voit pas
