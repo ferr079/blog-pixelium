@@ -28,7 +28,7 @@ Et autant de **non-findings** vérifiés : pas de XSS, pas d'injection SQL, pas 
 
 ## F-001 — Le rate-limit qui ne limitait pas vraiment
 
-Le [CV conversationnel](/posts/cv-conversationnel-chatbot-workers-ai) du site appelle Workers AI —
+Le [CV conversationnel](/cv-conversationnel-chatbot-workers-ai) du site appelle Workers AI —
 de l'inférence facturée. Je l'avais protégé par un rate-limit : 4 requêtes/minute, 30/heure,
 comptées dans KV. Le code semblait raisonnable :
 
@@ -88,7 +88,7 @@ documenté — on supprime les filets après les avoir remplacés, pas avant.
 - Les handlers d'API renvoyaient `e.message` brut au client en cas d'erreur — un détail
   d'implémentation qui peut exposer chemins, structure ou versions. Remplacé par un message
   générique côté client, le détail partant dans `console.error` côté Worker.
-- Le flag du [door game WOPR](/posts/wopr-bbs-terminal-workers-ai) — un défi de prompt injection
+- Le flag du [door game WOPR](/wopr-bbs-terminal-workers-ai) — un défi de prompt injection
   volontaire — était commité en clair dans le repo… qui a un miroir public GitHub. Un CTF dont la
   solution est dans le code source n'est plus un CTF. Le flag vit désormais dans un secret Worker,
   et sa valeur a été rotée.

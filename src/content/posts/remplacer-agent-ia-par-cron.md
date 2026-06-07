@@ -6,8 +6,8 @@ summary: "En avril, j'écrivais un article qui vantait Guardian, notre sentinell
 ---
 
 > Format **doctrine** — la suite directe de
-> [« Guardian : quand l'IA surveille le homelab »](/posts/openfang-guardian-aiops) (avril) et de
-> [« Hermes : savoir décommissionner pour mieux avancer »](/posts/hermes-agent-remplacer-pour-avancer).
+> [« Guardian : quand l'IA surveille le homelab »](/openfang-guardian-aiops) (avril) et de
+> [« Hermes : savoir décommissionner pour mieux avancer »](/hermes-agent-remplacer-pour-avancer).
 > Les portfolios montrent ce qu'on construit. Le nôtre documente aussi ce qu'on débranche, et pourquoi.
 
 ## TL;DR
@@ -84,7 +84,7 @@ LLM est le même backup. Une veille sans LLM est une liste de liens.
 Petite confirmation involontaire : pendant des semaines, personne n'a remarqué qu'OpenFang
 manquait. Les backups ont tourné (Dagu), les alertes sont arrivées (ntfy), la page status s'est
 mise à jour (Dagu encore). Le seul artefact de sa disparition a été… un pipeline de statistiques
-oublié dans la migration — et c'est [un marqueur qui mentait](/posts/marqueurs-qui-mentent) qui
+oublié dans la migration — et c'est [un marqueur qui mentait](/marqueurs-qui-mentent) qui
 l'a masqué, pas l'absence de l'agent.
 
 Quand on peut retirer un composant et que le système ne s'en aperçoit pas, le composant était
