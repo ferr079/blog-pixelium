@@ -109,3 +109,10 @@ Toute la flotte parle désormais le même agent, intégré au cycle d'upgrade st
 selon l'OS). Plus de générations qui divergent, plus de trous Alpine. Et trois playbooks qui
 rendent le prochain hôte trivial à équiper — ce qui, sur un homelab d'une seule personne, est
 exactement le genre d'investissement qui se rembourse.
+
+---
+
+> **Pour migrer la vôtre** — le mapping des composants Promtail → Alloy, les
+> templates `.alloy` prêts à adapter (journal systemd, fichiers plats, Docker) et
+> la liste complète des pièges sont publiés en open source :
+> **[github.com/ferr079/promtail-to-alloy](https://github.com/ferr079/promtail-to-alloy)**.
