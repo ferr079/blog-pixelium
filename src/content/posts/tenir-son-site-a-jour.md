@@ -6,6 +6,10 @@ tags: ["self-hosting", "homelab", "astro", "veille", "dette-technique", "forgejo
 summary: "Un site vieillit par ses dépendances. Le vrai sujet n'est pas « être au courant » — un SaaS le fait — mais fermer la boucle jusqu'à l'upgrade vérifié et déployé. Voici le workflow que nous testons pour ça, l'inventaire des sept briques self-hosted qu'il réclame, et pourquoi un laptop seul n'inspire pas ce genre de solution."
 ---
 
+> **Mise à jour — 26 juin 2026.** Ce que nous décrivions ici comme un workflow « en test » a tourné
+> pour de vrai depuis : Astro 7 est passé par cette boucle. Le récit — et les trois angles morts
+> qu'elle nous a révélés — est dans [« Ce que notre radar n'a pas vu »](/ce-que-notre-radar-n-a-pas-vu).
+
 > Ce dossier raconte un workflow mis en test le 18 juin 2026 : faire en sorte que notre infra
 > surveille le framework de ce site et nous prépare l'upgrade avant qu'il ne devienne une corvée.
 > C'est un retour d'expérience honnête, pas un tuto. Le code est sur
