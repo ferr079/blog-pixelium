@@ -1,6 +1,6 @@
 ---
 title: "Tuer les faux positifs : un SAST LLM où une seconde IA réfute la première"
-date: 2026-06-28
+date: 2026-06-28T20:30:00
 draft: false
 tags: ["ia-locale", "llm", "securite", "sast", "audit-code", "hugging-face", "zerogpu", "outlines", "agents", "defensif"]
 summary: "Demande à un LLM de trouver les vulnérabilités d'un bout de code et il t'en trouvera — trop. Des injections SQL sur des requêtes déjà sûres, des failles sur du code mort. Le vrai se noie dans le bruit, et on finit par tout ignorer. Notre deuxième Space Hugging Face attaque ce problème de front : une passe détecte large, une seconde passe *adversariale* essaie de réfuter chaque trouvaille. Ce qui survit est réel, et arrive avec un exploit. Voici comment, et le faux pas de calibrage qui a failli tout fausser."
