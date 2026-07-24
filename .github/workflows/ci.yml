@@ -1,0 +1,46 @@
+name: CI
+
+# Build-only, jamais de deploy ici : filet sur PR/branches avant que main ne
+# passe par deploy.yml. Cf. pixelium-site/.github/workflows/ci.yml (parité,
+# audit CI Grok pixelium/web#19) — mais assertion adaptée : ce repo n'a pas
+# de routes SSR (pas d'api/), dist/server reste vide contrairement au site.
+on:
+  pull_request:
+  push:
+    branches-ignore: [main] # main est déjà couvert par deploy.yml
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Assert build artefact
+        run: test -d dist/client
+
+      - name: No secrets in dist
+        run: |
+          # Motifs suffisamment longs pour ne pas matcher du texte légitime
+          # (un motif court type "sk-[A-Za-z0-9]" matche "mask-image" dans du
+          # CSS — testé et écarté sur le site avant de committer ce pattern).
+          if grep -rE 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{16,}|BEGIN [A-Z ]*PRIVATE' dist; then
+            echo "Possible secret material in dist" >&2
+            exit 1
+          fi
