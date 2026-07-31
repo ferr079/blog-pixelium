@@ -19,15 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-The license above covers the code of this blog: the Astro theme, layouts,
-components, styles and build configuration.
-
-The articles themselves — everything under src/content/ — are published under
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-(CC BY-NC-SA 4.0): https://creativecommons.org/licenses/by-nc-sa/4.0/
-
-In short: reuse the theme however you like; quote and translate the articles
-with credit and a link, don't resell them, and share derivatives alike.
