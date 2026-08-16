@@ -9,3 +9,10 @@ routes = [
 
 [assets]
 directory = "dist"
+
+# Workers Logs — même correctif que sur pixelium-site (2026-08-16) : sans ce
+# bloc, `observability` reste à null côté API et rien n'est persisté. Le blog
+# est du statique, donc peu de logs applicatifs, mais c'est aussi ce qui rend
+# une anomalie (404 en rafale, erreur d'asset) invisible faute de trace.
+[observability]
+enabled = true

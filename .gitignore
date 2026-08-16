@@ -3,4 +3,7 @@ dist/
 .astro/
 .wrangler/
 .env
+# Secrets locaux de `wrangler dev` — dépôt mirroré en public.
+.dev.vars
+.dev.vars.*
 *.log
