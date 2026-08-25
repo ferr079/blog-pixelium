@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 const { tag, posts } = Astro.props;
 ---
 
-<Base title={`${tag} — pixelium // blog`}>
+<Base title={`${tag} — pixelium // blog`} ogImage="/og/tags.png">
   <Nav />
   <main>
     <div class="tag-page">

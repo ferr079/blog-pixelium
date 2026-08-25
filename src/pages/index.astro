@@ -12,7 +12,7 @@ const posts = (await getCollection('posts', (p) => !p.data.draft))
 const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 ---
 
-<Base title="pixelium // blog — Journal de bord technique">
+<Base title="pixelium // blog — Journal de bord technique" ogImage="/og/home.png">
   <Nav />
   <main>
     <section class="hero">

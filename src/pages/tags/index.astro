@@ -10,7 +10,7 @@ posts.forEach((p) => p.data.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(
 const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 ---
 
-<Base title="Tags — pixelium // blog">
+<Base title="Tags — pixelium // blog" ogImage="/og/tags.png">
   <Nav />
   <main>
     <div class="tags-page">
