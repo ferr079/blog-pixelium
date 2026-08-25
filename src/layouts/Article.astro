@@ -7,6 +7,8 @@ import PrevNext from '../components/PrevNext.astro';
 
 interface Props {
   title: string;
+  /* Sert à retrouver la carte Open Graph de l'article (public/og/posts/<slug>.png). */
+  slug: string;
   date: Date;
   tags: string[];
   summary: string;
@@ -16,7 +18,7 @@ interface Props {
   next?: { title: string; slug: string } | null;
 }
 
-const { title, date, tags, summary, readingTime, headings, prev, next } = Astro.props;
+const { title, slug, date, tags, summary, readingTime, headings, prev, next } = Astro.props;
 
 const formatted = date.toLocaleDateString('fr-FR', {
   year: 'numeric',
@@ -25,7 +27,13 @@ const formatted = date.toLocaleDateString('fr-FR', {
 });
 ---
 
-<Base title={`${title} — pixelium // blog`} description={summary}>
+<Base
+  title={`${title} — pixelium // blog`}
+  description={summary}
+  ogImage={`/og/posts/${slug}.png`}
+  ogImageAlt={`Carte pixelium // blog — ${title}`}
+  ogType="article"
+>
   <Nav />
   <div class="progress-bar" id="progress"></div>
   <article class="article-page">

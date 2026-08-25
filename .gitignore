@@ -7,3 +7,6 @@ dist/
 .dev.vars
 .dev.vars.*
 *.log
+
+# Cartes Open Graph : générées au build par scripts/og/gen-og.mjs.
+public/og/

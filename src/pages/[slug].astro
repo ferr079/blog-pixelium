@@ -24,6 +24,7 @@ const readingTime = getReadingTime(post.body ?? '');
 
 <Article
   title={post.data.title}
+  slug={post.id}
   date={post.data.date}
   tags={post.data.tags}
   summary={post.data.summary}
