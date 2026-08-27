@@ -6,6 +6,8 @@ tags: ["ia-locale", "llm", "structured-output", "constrained-decoding", "hugging
 summary: "On voulait une démo qui prouve une chose simple : qu'un petit modèle peut produire du JSON qui respecte toujours un schéma — pas souvent, toujours. L'idée a tenu en un après-midi ; la mise en ligne nous a appris deux choses que la théorie ne dit pas. Que le CPU gratuit d'un hébergeur a un plancher qu'aucune optimisation ne franchit. Et que la démo et le produit ne veulent pas le même modèle. Voici comment on est passés d'un Space à 50 secondes par requête à un autre à deux, et ce que la contrainte garantit vraiment."
 ---
 
+> **Mise à jour (27 août 2026)** — Le Space de cette démo est **en pause** : le compte Hugging Face n'est plus Pro, et ZeroGPU en dépend. Nous avons retiré le lien du corps de l'article plutôt que de laisser un 503 au bout. Le récit ci-dessous décrit le dispositif tel qu'il tournait ; la méthode, elle, n'a pas bougé.
+
 Un modèle de langage à qui on demande du JSON fait de son mieux. C'est exactement le problème : *de son mieux*. Il produit une structure plausible, souvent juste, parfois enveloppée dans un bloc de code Markdown, de temps en temps avec un champ en trop ou un type qui ne colle pas. En démo, ça passe. En production, le 1 % qui dérape casse le pipeline qui consomme la sortie — et on apprend à ses dépens que « ça marche presque toujours » n'est pas une garantie, c'est un pari.
 
 Il existe une réponse propre à ça : le **constrained decoding**. Plutôt que d'espérer que le modèle suive le schéma, on transforme le schéma en grammaire et on **interdit au décodeur d'émettre le moindre token qui sortirait des clous**. La structure cesse d'être une qualité du modèle pour devenir une propriété du *décodeur*. Et le point qui rend l'idée jolie : ça marche quelle que soit la taille du modèle.
@@ -65,7 +67,7 @@ Et ici, un réflexe qui a payé : **valider d'abord sur notre propre matériel.*
 
 ## Ce que ça donne
 
-[La démo est en ligne](https://huggingface.co/spaces/Ferr0/structured-output-playground), cliquable. On y colle un texte, on choisit un schéma (contact, produit, offre d'emploi, événement, ou le sien), et on bascule l'interrupteur :
+La démo était en ligne, cliquable. On y colle un texte, on choisit un schéma (contact, produit, offre d'emploi, événement, ou le sien), et on bascule l'interrupteur :
 
 - **ON** : du JSON valide *et conforme au schéma*, en une à deux secondes, types et énumérés tenus.
 - **OFF** : le même modèle, libre — qui réussit souvent, et qui, sur le cas « Event », sort un `"a handful of folks"` à la place d'un entier sous nos yeux.
