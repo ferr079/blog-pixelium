@@ -6,6 +6,8 @@ tags: ["ia-locale", "llm", "securite", "sast", "audit-code", "hugging-face", "ze
 summary: "Demande à un LLM de trouver les vulnérabilités d'un bout de code et il t'en trouvera — trop. Des injections SQL sur des requêtes déjà sûres, des failles sur du code mort. Le vrai se noie dans le bruit, et on finit par tout ignorer. Notre deuxième Space Hugging Face attaque ce problème de front : une passe détecte large, une seconde passe *adversariale* essaie de réfuter chaque trouvaille. Ce qui survit est réel, et arrive avec un exploit. Voici comment, et le faux pas de calibrage qui a failli tout fausser."
 ---
 
+> **Mise à jour (27 août 2026)** — Le Space décrit ici est **en pause** : le compte Hugging Face n'est plus Pro, et ZeroGPU en dépend. Nous avons retiré le lien du corps de l'article plutôt que de laisser un 503 au bout — l'outil MCP qu'il exposait est hors ligne avec lui. Le récit ci-dessous décrit le dispositif tel qu'il tournait.
+
 Demande à un modèle de langage de *« trouver les vulnérabilités »* dans un bout de code, et il fera trop bien son travail. Il signalera une injection SQL sur une requête déjà paramétrée, une XSS sur du code jamais appelé, une faille plausible mais inexploitable. C'est le mal chronique du SAST — l'analyse statique de sécurité — et il empire avec les LLM, qui ajoutent leur propre tendance à halluciner. Le résultat : une liste où les vraies failles se noient sous les fausses. Et un développeur noyé sous les fausses alertes apprend vite à toutes les ignorer, y compris la seule qui comptait.
 
 Après notre [premier Space](https://blog.pixelium.win/forcer-un-llm-a-respecter-un-schema) — celui qui force un LLM à respecter un schéma JSON — nous voulions un deuxième qui parle à notre cœur de métier : la **sécurité défensive**. Et un audit de code qui ne crie pas au loup à chaque ligne, ça, c'est un vrai sujet.
@@ -50,7 +52,7 @@ La 3090 répète, le H200 de ZeroGPU joue la représentation. Le compute lourd r
 
 ## Ce que ça donne
 
-[Le Space est en ligne](https://huggingface.co/spaces/Ferr0/adversarial-sast). On colle du code, on choisit le langage, on audite. En *OFF*, la liste brute — l'injection SQL inoffensive y figure comme une vraie menace, exactement comme un scanner naïf le ferait. En *ON*, la réfutation passe : la fausse alerte se barre avec sa justification, la vraie reste avec son exploit.
+Le Space était en ligne. On colle du code, on choisit le langage, on audite. En *OFF*, la liste brute — l'injection SQL inoffensive y figure comme une vraie menace, exactement comme un scanner naïf le ferait. En *ON*, la réfutation passe : la fausse alerte se barre avec sa justification, la vraie reste avec son exploit.
 
 Ce n'est pas un outil de production — c'est une **démonstration de principe**, et un petit modèle de 7 milliards de paramètres se trompe encore parfois. Mais le principe, lui, est solide, et c'est exactement celui que nous appliquons pour auditer ce site : ne rapporter que ce qu'on peut exploiter. Le Space rend visible, en public et de façon générique, une discipline qu'on pratique en privé.
 
