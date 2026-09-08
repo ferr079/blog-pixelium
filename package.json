@@ -11,16 +11,16 @@
     "og": "node scripts/og/gen-og.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.5",
-    "@astrojs/mdx": "^7.0.8",
+    "@astrojs/cloudflare": "^14.3.1",
+    "@astrojs/mdx": "^8.0.1",
     "@astrojs/rss": "^4.0.19",
-    "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.2.9"
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.2"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "github-slugger": "^2.0.0",
     "satori": "^0.29.0",
-    "wrangler": "^4.123.0"
+    "wrangler": "^4.125.0"
   }
 }
