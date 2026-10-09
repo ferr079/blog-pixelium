@@ -1,6 +1,6 @@
 # blog.pixelium.win
 
-Blog technique documentant la construction d'un homelab auto-hébergé de **62 services** sur 4 nœuds Proxmox. Écrit en français, construit avec Astro 7, déployé sur Cloudflare Workers.
+Blog technique documentant la construction d'un homelab auto-hébergé d'**une soixantaine de services** sur 4 nœuds Proxmox. Écrit en français, construit avec Astro 7, déployé sur Cloudflare Workers.
 
 **[blog.pixelium.win](https://blog.pixelium.win)** | **[pixelium.win](https://pixelium.win)**
 
