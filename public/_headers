@@ -18,3 +18,13 @@
 /og/*
   ! Cross-Origin-Resource-Policy
   Cross-Origin-Resource-Policy: cross-origin
+
+# Fichiers texte (robots, llms, security). Le Content-Type de l'asset est déduit de
+# l'extension, SANS charset : un client qui retombe alors sur ISO-8859-1
+# (requests en Python, par exemple) lit « StÃ©phane », et la RFC 9116 exige
+# charset=utf-8 pour security.txt. Celui que llms.txt.ts pose dans sa Response
+# est perdu au prérendu, puisque le fichier devient un asset statique.
+# ⚠️ wrangler dev sert déjà charset=utf-8 : le défaut ne se voit qu'en prod.
+# Constaté et corrigé le 2026-10-12.
+/*.txt
+  Content-Type: text/plain; charset=utf-8
