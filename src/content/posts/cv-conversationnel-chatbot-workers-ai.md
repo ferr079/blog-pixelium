@@ -60,7 +60,7 @@ La première version du system prompt contenait l'essentiel : infra, CTF, stack 
 
 On a donc réécrit le prompt `cv` en profondeur à partir des données brutes de Stéphane — son Notion personnel, ses listes de compétences, son parcours complet. Le prompt passe de ~60 lignes à ~120 lignes et couvre maintenant :
 
-- **Expériences pro complètes** — des marchés de Rungis à 4h du matin jusqu'à la cybersécurité en alternance, en passant par Canon, La Poste, la gérance d'un magasin informatique à Versailles
+- **Expériences pro complètes** — des marchés de Rungis à 4h du matin jusqu'à la cybersécurité en alternance, en passant par une usine d'imprimantes, la maintenance industrielle et la gérance d'un magasin informatique à Versailles
 - **Diplômes et certifications** — BEP Compta, habilitations électriques, Tech Info, Tech Sup (mention Excellent), cursus cybersécurité avec score 20.5/20 au wargame AD
 - **Gouvernance et théorie** — ISO 27001, EBIOS RM, forensics, SOC, analyse malware — pas juste du technique, de la gouvernance aussi
 - **Skills créatifs** — 30 ans de mix hebdomadaire (DJ en événementiel, membre d'une asso musicale), Ableton Live (MAO, sound design, VST), 3D Studio Max (modélisation, compositing), Blender, Maya, UE5, Godot, montage vidéo — la preuve que c'est un profil complet, pas mono-dimensionnel
