@@ -20,7 +20,7 @@
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "github-slugger": "^2.0.0",
-    "satori": "^0.29.0",
+    "satori": "^0.55.0",
     "wrangler": "^4.149.0"
   }
 }
