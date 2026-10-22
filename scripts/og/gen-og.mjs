@@ -81,6 +81,9 @@ const el = (type, style, children) => ({ type, props: { style, children } });
 function card({ eyebrow, title, subtitle, footer }) {
   return el('div', {
     display: 'flex', flexDirection: 'column', width: '1200px', height: '630px',
+    // satori ≥ 0.5x (moteur harfbuzzjs) ne déduit plus le padding de height : sans border-box
+    // le conteneur fait 630 + 144 px et space-between pousse le pied (date + tags) hors cadre (#55, #62).
+    boxSizing: 'border-box',
     background: BG, padding: '72px 80px', justifyContent: 'space-between',
     fontFamily: 'JetBrains Mono', borderLeft: `12px solid ${ACCENT}`,
   }, [
