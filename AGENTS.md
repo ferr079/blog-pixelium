@@ -42,8 +42,7 @@ attaquer. Concentre-toi sur :
 4. **`nodejs_compat`** — le flag est activé dans `wrangler.toml` pour un site purement
    statique. Justifié, ou surface de compatibilité élargie sans usage ?
 
-**3 commits** sont passés depuis l'audit du 24/07 (headers, puis `ci.yml` et `deploy.yml` en
-parité avec le site) — la chaîne CI mérite le même regard que le contenu.
+Lister les commits passés depuis l'audit du 24/07 (`git log --oneline`) : headers, `ci.yml`, `deploy.yml` — la chaîne CI mérite le même regard que le contenu.
 
 ## Ce qu'on n'attend pas
 
