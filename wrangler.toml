@@ -1,5 +1,5 @@
 name = "blog-pixelium"
-compatibility_date = "2025-04-01"
+compatibility_date = "2026-10-13" # alignée sur pixelium-site (le blog était resté au 2025-04-01)
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 
