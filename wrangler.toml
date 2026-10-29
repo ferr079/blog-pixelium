@@ -9,6 +9,9 @@ routes = [
 
 [assets]
 directory = "dist"
+# Sans ce réglage, une URL inconnue renvoie une 404 vide (0 o) alors que
+# dist/404.html existe (blog-pixelium#79).
+not_found_handling = "404-page"
 
 # Workers Logs — même correctif que sur pixelium-site (2026-08-16) : sans ce
 # bloc, `observability` reste à null côté API et rien n'est persisté. Le blog
